@@ -6,22 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('artists', function (Blueprint $table) {
+        Schema::create('social_networks', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('artist_id')->constrained()->onDelete('cascade');
+            $table->string('platform', 50);
+            $table->string('url');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('artists');
+        Schema::dropIfExists('social_networks');
     }
 };

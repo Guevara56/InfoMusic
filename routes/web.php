@@ -26,3 +26,8 @@ use App\Http\Controllers\ArtistController;
 
 Route::get('/artists', [ArtistController::class, 'index']);
 Route::get('/artists/{id}', [ArtistController::class, 'show']);
+
+use App\Http\Controllers\ProductController;
+
+Route::get('/products', [ProductController::class, 'index']);
+Route::post('/products', [ProductController::class, 'store']);
