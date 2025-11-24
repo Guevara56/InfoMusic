@@ -6,22 +6,28 @@ use Inertia\Inertia;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
-class ProductController extends Controller {
-    public function index() {
-        $products = Product::orderBy('created_at','desc')->get();
-        return Inertia::render('Products/Index', [
-            'products' => $products
-        ]);
+class ProductController extends Controller
+{
+    public function index()
+    {
+        return Inertia::render('Products/Index', []);
+    }
+    public function create()
+    {
+        return Inertia::render('Products/Create');
     }
 
-    public function store(Request $request) {
-        $data = $request->validate([
-            'name' => 'required|string',
-            'price' => 'required|numeric',
-            'description' => 'nullable|string'
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric|min:0',
         ]);
-        Product::create($data);
-        return redirect()->back(); // con Inertia esto funciona bien
+
+        Product::create($validated);
+
+        return redirect()->route('products.index')->with('success', 'Product created successfully.');
     }
 }
 

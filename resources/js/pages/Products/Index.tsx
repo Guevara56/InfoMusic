@@ -1,47 +1,25 @@
-import React from 'react';
-import { Inertia } from '@inertiajs/inertia';
-import { usePage, Link, router } from '@inertiajs/react';
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
+import AppLayout from '@/layouts/app-layout';
+import { type BreadcrumbItem } from '@/types';
+import { Head, Link, usePage } from '@inertiajs/react';
+import { route } from 'ziggy-js';
 
 
-
-
-type Product = {
-  id: number;
-  name: string;
-  description?: string;
-  price: string;
-};
-
-type PageProps = {
-  products: Product[];
-};
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Products',
+        href: '/products',
+    },
+];
 
 export default function Index() {
-  const { props } = usePage<{ props: PageProps }>(); // explicación abajo
-  const products = (props as any).products as Product[];
-
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl mb-4">Productos</h1>
-      <form onSubmit={(e) => {
-        e.preventDefault();
-        const form = e.target as HTMLFormElement;
-        const formData = new FormData(form);
-        Inertia.post('/products', formData);
-      }}>
-        <input name="name" placeholder="Nombre" />
-        <input name="price" placeholder="Precio" />
-        <input name="description" placeholder="Descripción" />
-        <Button type="submit">Crear</Button>
-      </form>
-
-      <h1 className="text-2xl my-4">Lista de Productos</h1>
-      <ul>
-        {products.map(p => (
-          <li key={p.id}>{p.name} — {p.price}€ {p.description && ` — ${p.description}`}</li>
-        ))}
-      </ul>
-    </div>
-  );
+    const products = usePage().props.products;
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Products" />
+            <div className="m-4">
+               <Link href={route('products.create')}><Button>Create a Product</Button></Link>
+            </div>
+        </AppLayout>
+    );
 }
