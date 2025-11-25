@@ -1,3 +1,4 @@
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -6,6 +7,7 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { route } from 'ziggy-js';
+import { CircleAlert } from 'lucide-react';
 
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -36,7 +38,17 @@ export default function Create() {
                      {/* Display error */}
 
                      {Object.keys(errors).length > 0 && (
-                        
+                        <Alert>
+                        <CircleAlert />
+                        <AlertTitle>Errors!</AlertTitle>
+                        <AlertDescription>
+                            <ul>
+                                {Object.entries(errors).map(([key,message])=> (
+                                    <li key={key}>{message as string}</li>
+                                ))}
+                            </ul>
+                        </AlertDescription>
+                        </Alert>
                      )}
                     <div className='gap-1.5'>
                         <Label htmlFor="product name">Name</Label>
@@ -50,7 +62,7 @@ export default function Create() {
                         <Label htmlFor="product description">Description</Label>
                         <Textarea placeholder="Description" value = {data.description} onChange={(e) => setData('description', e.target.value)}></Textarea>
                     </div>
-                    <Button type="submit" className="mt-4">Add Product</Button>
+                    <Button disabled={processing} type="submit" className="mt-4">Add Product</Button>
                 </form>
             </div>
         </AppLayout>
