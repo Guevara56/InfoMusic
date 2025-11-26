@@ -1,40 +1,106 @@
-import { Head, Link } from '@inertiajs/react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import AppLayout from '@/layouts/app-layout';
+import { type BreadcrumbItem } from '@/types';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { route } from 'ziggy-js';
+import { CircleCheckBig } from 'lucide-react';
+import {
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
 
-interface Artist {
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Artists',
+        href: '/Artists',
+    },
+];
+
+interface Artists {
     id: number;
     name: string;
-    country: string;
-    genre: {
-        name: string;
+    genre: string;
+    description: string;
+}
+
+interface PageProps {
+    flash: {
+        message?: string;
     };
+    artists: Artists[];
 }
 
-interface Props {
-    artists: Artist[];
-}
+export default function Index() {
 
-export default function Index({ artists }: Props) {
+    const { artists, flash } = usePage().props as PageProps;
+
+    const { processing, delete: destroy } = useForm();
+
+    const handleDelete = (id: number, name: string) => {
+        if (confirm(`Do you want to delete a Artist - ${id} . ${name}`)) {
+            destroy(route('artists.destroy', id));
+        }
+
+    }
+
     return (
-        <>
-            <Head title="Artistas" />
-            
-            <div className="container mx-auto px-4 py-8">
-                <h1 className="text-3xl font-bold mb-6">Artistas</h1>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {artists.map(artist => (
-                        <Link
-                            key={artist.id}
-                            href={`/artists/${artist.id}`}
-                            className="bg-white rounded-lg shadow p-6 hover:shadow-xl transition"
-                        >
-                            <h3 className="text-xl font-semibold">{artist.name}</h3>
-                            <p className="text-gray-600">{artist.genre.name}</p>
-                            <p className="text-sm text-gray-500">{artist.country}</p>
-                        </Link>
-                    ))}
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Artists" />
+            <div className="m-4">
+                <Link href={route('artists.create')}><Button>Create a Artist</Button></Link>
+            </div>
+            <div className="m-4">
+                <div>
+                    {flash.message && (
+                        <Alert>
+                            <CircleCheckBig className="text-green-500" />
+                            <AlertTitle>Notification!</AlertTitle>
+                            <AlertDescription>
+                                {flash.message}
+                            </AlertDescription>
+                        </Alert>
+                    )}
                 </div>
             </div>
-        </>
+            {artists.length > 0 && (
+                <div className="m-4">
+                    <Table>
+                        <TableCaption>A list of your recent artists.</TableCaption>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="w-[100px]">ID</TableHead>
+                                <TableHead>Name</TableHead>
+                                <TableHead>Genre</TableHead>
+                                <TableHead>Description</TableHead>
+                                <TableHead className="text-center">Action</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {artists.map((artists) => (
+                                <TableRow>
+                                    <TableCell className="font-medium">{artists.id}</TableCell>
+                                    <TableCell>{artists.name}</TableCell>
+                                    <TableCell>{artists.genre}</TableCell>
+                                    <TableCell>{artists.description}</TableCell>
+                                    <TableCell className="text-center space-x-2">
+                                        <Link href={route('artists.edit', artists.id)}><Button className='bg-slate-600 hover:bg-slate-700'>Edit</Button></Link>
+                                        <Button disabled={processing} onClick={() => handleDelete(artists.id, artists.name)} className="bg-red-500 hover:bg-red-800">Delete</Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+
+                        </TableBody>
+                    </Table>
+                </div>
+
+            )}
+        </AppLayout>
     );
 }

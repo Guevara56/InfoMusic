@@ -2,29 +2,61 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Artist;
 use Inertia\Inertia;
+use App\Models\Artist;
+use Illuminate\Http\Request;
 
 class ArtistController extends Controller
 {
     public function index()
     {
-        $artists = Artist::with('genre')->get();
-        
-        // En lugar de return response()->json()
-        // devuelves un componente React con los datos
-        return Inertia::render('Artists/Index', [
-            'artists' => $artists
-        ]);
+        $artists = Artist::all();
+        return Inertia::render('Artists/Index', compact('artists'));
+    }
+    public function create()
+    {
+        return Inertia::render('Artists/Create');
     }
 
-    public function show($id)
+    public function store(Request $request)
     {
-        $artist = Artist::with(['genre', 'socialNetworks', 'products'])
-                        ->findOrFail($id);
-        
-        return Inertia::render('Artists/Show', [
-            'artist' => $artist
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'genre' => 'required|string|max:255',
+            'description' => 'nullable|string',
         ]);
+
+        Artist::create($request->all());
+
+        return redirect()->route('artists.index')->with('message', 'Artist created successfully.');
+    }
+
+    public function destroy(Artist $artist)
+    {
+        $artist->delete();
+
+        return redirect()->route('artists.index')->with('message', 'Artist deleted successfully.');
+    }
+
+    public function edit(Artist $artist)
+    {
+        return Inertia::render('Artists/Edit', compact('artist'));
+    }
+
+    public function update(Request $request, Artist $artist)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'genre' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $artist->update([
+            'name' => 'required|string|max:255',
+            'genre' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        return redirect()->route('artists.index')->with('message', 'Artist updated successfully.');
     }
 }
