@@ -42,4 +42,6 @@ Route::get('/test', function () {
     return Inertia::render('test');
 })->name('test');
 
+    
+
 
