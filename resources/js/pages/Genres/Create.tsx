@@ -13,7 +13,7 @@ import { CircleAlert } from 'lucide-react';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Create',
-        href: '/products/create',
+        href: '/genres/create',
     },
 ];
 
@@ -21,18 +21,18 @@ export default function Create() {
 
     const {data, setData, post, processing, errors} = useForm({
         name: '',
-        price: '',
+        genre: '',
         description: '',
     });  
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('products.store'));
+        post(route('genres.store'));
     }
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Create a New Product" />
+            <Head title="Create a New Genre" />
             <div className ="w-8/12 p-4">
                 <form onSubmit={handleSubmit}className = "space-y-4">
                      {/* Display error */}
@@ -51,20 +51,20 @@ export default function Create() {
                         </Alert>
                      )}
                     <div className='gap-1.5'>
-                        <Label htmlFor="product name">Name</Label>
-                        <Input placeholder="Product Name" value = {data.name} onChange={(e) => setData('name', e.target.value)}></Input>
+                        <Label htmlFor="genre name">Name</Label>
+                        <Input placeholder=" Name" value = {data.name} onChange={(e) => setData('name', e.target.value)}></Input>
                     </div>
                     <div className='gap-1.5'>
-                        <Label htmlFor="product price">Price</Label>
-                        <Input placeholder="Price" value = {data.price} onChange={(e) => setData('price', e.target.value)}></Input>
+                        <Label htmlFor="genre genre">Genre</Label>
+                        <Input placeholder="Genre" value = {data.genre} onChange={(e) => setData('genre', e.target.value)}></Input>
                     </div>
                     <div className='gap-1.5'>
-                        <Label htmlFor="product description">Description</Label>
+                        <Label htmlFor="genre description">Description</Label>
                         <Textarea placeholder="Description" value = {data.description} onChange={(e) => setData('description', e.target.value)}></Textarea>
                     </div>
-                    <Button disabled={processing} type="submit" className="mt-4">Add Product</Button>
+                    <Button disabled={processing} type="submit" className="mt-4">Add Genre</Button>
                 </form>
-            </div>  
+            </div>
         </AppLayout>
     );
 }

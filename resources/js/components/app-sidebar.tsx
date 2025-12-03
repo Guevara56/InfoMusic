@@ -13,14 +13,15 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Boxes, Music  } from 'lucide-react';
+import { BookOpen,LayoutGrid, Boxes, Music, Disc3, UserPlus  , MicVocal, User, SquareActivity, Github  } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
+   
     {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
+        title: 'Users',
+        href: '/users',
+        icon: User,
     },
     {
         title: 'Products',
@@ -30,15 +31,41 @@ const mainNavItems: NavItem[] = [
     {
         title: 'Artists',
         href: '/artists',
+        icon: MicVocal ,
+    },
+    {
+        title: 'Labels',
+        href: '/labels',
+        icon: Disc3,
+    },
+    {
+        title: 'Songs',
+        href: '/songs',
         icon: Music,
-    }
+    },
+    {
+        title: 'Genres',
+        href: '/genres',
+        icon: SquareActivity ,
+    },
+    {
+        title: 'Social Medias',
+        href: '/socialmedias',
+        icon: UserPlus  ,
+    },
+    {
+        title: 'Dashboard',
+        href: dashboard(),
+        icon: LayoutGrid,
+    },
+    
 ];
 
 const footerNavItems: NavItem[] = [
     {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
+        title: 'Github',
+        href: 'https://github.com/Guevara56/InfoMusic',
+        icon: Github,
     },
     {
         title: 'Documentation',
