@@ -10,9 +10,17 @@ return new class extends Migration
     {
         Schema::create('genres', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100);
-            $table->text('description')->nullable();
-            $table->string('image_url')->nullable();
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->timestamps();
+        });
+
+         // Tabla pivote para la relación muchos a muchos entre artistas y generos
+
+        Schema::create('artist_genre', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('artist_id')->constrained()->onDelete('cascade');
+            $table->foreignId('genre_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -20,5 +28,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('genres');
+        Schema::dropIfExists('artist_genre');
     }
 };

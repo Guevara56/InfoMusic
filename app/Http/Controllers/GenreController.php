@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\Genre;
-use Illuminate\Http\Request;
+use App\Models\Artist;
+use Illuminate\Http\Request;    
 
 class GenreController extends Controller
 {
     public function index()
     {
-        $genres = Genre::all();
+        $genres = Genre::with('artists')->get();
         return Inertia::render('Genres/Index', compact('genres'));
     }
     public function create()
@@ -21,10 +22,9 @@ class GenreController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'genre' => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
+            'name' => 'required|string|max:255|unique:genres,name',
+            'slug' => 'required|string|max:255',
+        ]); 
 
         Genre::create($request->all());
 
@@ -47,14 +47,12 @@ class GenreController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'genre' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'slug' => 'required|string|max:255',
         ]);
 
         $genre->update([
             'name' => 'required|string|max:255',
-            'genre' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'slug' => 'required|string|max:255',
         ]);
 
         return redirect()->route('genres.index')->with('message', 'Genre updated successfully.');

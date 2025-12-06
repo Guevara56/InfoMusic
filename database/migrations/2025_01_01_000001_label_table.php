@@ -8,17 +8,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('record_labels', function (Blueprint $table) {
+        Schema::create('labels', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('country', 100)->nullable();
-            $table->string('website')->nullable();
+            $table->string('country')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('record_labels');
+        Schema::dropIfExists('labels');
     }
 };

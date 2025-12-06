@@ -8,17 +8,16 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('social_networks', function (Blueprint $table) {
+        Schema::create('carts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('artist_id')->constrained()->onDelete('cascade');
-            $table->string('platform', 50);
-            $table->string('url');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->string('status')->default('active');
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('social_networks');
+        Schema::dropIfExists('carts');
     }
 };

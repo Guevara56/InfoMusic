@@ -11,8 +11,11 @@ return new class extends Migration
         Schema::create('artists', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('genre');
-            $table->text('description')->nullable();
+            $table->text('bio')->nullable();
+            $table->string('avatar')->nullable();
+            $table->string('country')->nullable();
+            $table->string('formed_year')->nullable();
+            $table->foreignId('label_id')->nullable()->constrained('labels')->onDelete('set null');
             $table->timestamps();
         });
     }

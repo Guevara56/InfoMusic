@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('artist_products', function (Blueprint $table) {
+        Schema::create('social_media', function (Blueprint $table) {
             $table->id();
+            $table->string('platform'); // e.g., 'Twitter', 'Facebook', 'Instagram'
+            $table->string('url');
             $table->foreignId('artist_id')->constrained()->onDelete('cascade');
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('artist_products');
+        Schema::dropIfExists('social_media');
     }
 };
