@@ -15,91 +15,110 @@ import {
     TableRow,
 } from "@/components/ui/table"
 
-
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Labels',
-        href: '/Labels',
+        href: '/labels',
     },
 ];
 
-interface Labels {
+interface Label {
     id: number;
     name: string;
-    genre: string;
+    country: string;
     description: string;
+    logo: string;
+    website: string;
+    artists_count?: number;
 }
 
 interface PageProps {
     flash: {
         message?: string;
     };
-    labels: Labels[];
+    labels: Label[];
 }
 
 export default function Index() {
-
     const { labels, flash } = usePage().props as PageProps;
-
     const { processing, delete: destroy } = useForm();
 
     const handleDelete = (id: number, name: string) => {
-        if (confirm(`Do you want to delete a Label - ${id} . ${name}`)) {
+        if (confirm(`Do you want to delete label - ${name}?`)) {
             destroy(route('labels.destroy', id));
         }
-
     }
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Labels" />
+            <Head title="Labels (Record Labels)" />
+            
             <div className="m-4">
-                <Link href={route('labels.create')}><Button>Create a Label</Button></Link>
+                <Link href={route('labels.create')}>
+                    <Button>Create Label</Button>
+                </Link>
             </div>
+            
             <div className="m-4">
-                <div>
-                    {flash.message && (
-                        <Alert>
-                            <CircleCheckBig className="text-green-500" />
-                            <AlertTitle>Notification!</AlertTitle>
-                            <AlertDescription>
-                                {flash.message}
-                            </AlertDescription>
-                        </Alert>
-                    )}
-                </div>
+                {flash.message && (
+                    <Alert>
+                        <CircleCheckBig className="text-green-500" />
+                        <AlertTitle>Notification!</AlertTitle>
+                        <AlertDescription>{flash.message}</AlertDescription>
+                    </Alert>
+                )}
             </div>
+            
             {labels.length > 0 && (
                 <div className="m-4">
                     <Table>
-                        <TableCaption>A list of your recent labels.</TableCaption>
+                        <TableCaption>A list of record labels.</TableCaption>
                         <TableHeader>
                             <TableRow>
                                 <TableHead className="w-[100px]">ID</TableHead>
                                 <TableHead>Name</TableHead>
-                                <TableHead>Genre</TableHead>
-                                <TableHead>Description</TableHead>
+                                <TableHead>Country</TableHead>
+                                <TableHead>Artists</TableHead>
+                                <TableHead>Website</TableHead>
                                 <TableHead className="text-center">Action</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {labels.map((labels) => (
-                                <TableRow>
-                                    <TableCell className="font-medium">{labels.id}</TableCell>
-                                    <TableCell>{labels.name}</TableCell>
-                                    <TableCell>{labels.genre}</TableCell>
-                                    <TableCell>{labels.description}</TableCell>
+                            {labels.map((label) => (
+                                <TableRow key={label.id}>
+                                    <TableCell className="font-medium">{label.id}</TableCell>
+                                    <TableCell className="font-semibold">{label.name}</TableCell>
+                                    <TableCell>{label.country || 'N/A'}</TableCell>
+                                    <TableCell className="text-center">{label.artists_count || 0}</TableCell>
+                                    <TableCell>
+                                        {label.website ? (
+                                            <a 
+                                                href={label.website} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="text-blue-600 hover:underline"
+                                            >
+                                                Visit
+                                            </a>
+                                        ) : 'N/A'}
+                                    </TableCell>
                                     <TableCell className="text-center space-x-2">
-                                        <Link href={route('labels.edit', labels.id)}><Button className='bg-slate-600 hover:bg-slate-700'>Edit</Button></Link>
-                                        <Button disabled={processing} onClick={() => handleDelete(labels.id, labels.name)} className="bg-red-500 hover:bg-red-800">Delete</Button>
+                                        <Link href={route('labels.edit', label.id)}>
+                                            <Button className='bg-slate-600 hover:bg-slate-700'>Edit</Button>
+                                        </Link>
+                                        <Button 
+                                            disabled={processing} 
+                                            onClick={() => handleDelete(label.id, label.name)} 
+                                            className="bg-red-500 hover:bg-red-800"
+                                        >
+                                            Delete
+                                        </Button>
                                     </TableCell>
                                 </TableRow>
                             ))}
-
                         </TableBody>
                     </Table>
                 </div>
-
             )}
         </AppLayout>
     );

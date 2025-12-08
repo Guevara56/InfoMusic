@@ -4,16 +4,21 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\Genre;
-use App\Models\Artist;
-use Illuminate\Http\Request;    
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class GenreController extends Controller
 {
     public function index()
     {
-        $genres = Genre::with('artists')->get();
+        // Cargar géneros con conteo de artistas y canciones
+        $genres = Genre::withCount(['artists', 'songs'])
+                       ->orderBy('id')
+                       ->get();
+        
         return Inertia::render('Genres/Index', compact('genres'));
     }
+
     public function create()
     {
         return Inertia::render('Genres/Create');
@@ -23,19 +28,16 @@ class GenreController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:genres,name',
-            'slug' => 'required|string|max:255',
-        ]); 
+            'description' => 'nullable|string',
+        ]);
 
-        Genre::create($request->all());
+        Genre::create([
+            'name' => $request->name,
+            'slug' => Str::slug($request->name),  // Generar slug
+            'description' => $request->description,
+        ]);
 
         return redirect()->route('genres.index')->with('message', 'Genre created successfully.');
-    }
-
-    public function destroy(Genre $genre)
-    {
-        $genre->delete();
-
-        return redirect()->route('genres.index')->with('message', 'Genre deleted successfully.');
     }
 
     public function edit(Genre $genre)
@@ -46,15 +48,24 @@ class GenreController extends Controller
     public function update(Request $request, Genre $genre)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:genres,name,' . $genre->id,
+            'description' => 'nullable|string',
         ]);
 
         $genre->update([
-            'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255',
+            'name' => $request->name,
+            'slug' => Str::slug($request->name),
+            'description' => $request->description,
         ]);
 
         return redirect()->route('genres.index')->with('message', 'Genre updated successfully.');
+    }
+
+    public function destroy(Genre $genre)
+    {
+        // Las relaciones M:M se borran automáticamente por cascade
+        $genre->delete();
+
+        return redirect()->route('genres.index')->with('message', 'Genre deleted successfully.');
     }
 }

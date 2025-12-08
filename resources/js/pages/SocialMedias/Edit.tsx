@@ -2,43 +2,63 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import { route } from 'ziggy-js';
-import { CircleAlert } from 'lucide-react'; 
+import { CircleAlert } from 'lucide-react';
+
+interface ArtistType {
+    id: number;
+    name: string;
+}
 
 interface SocialMedia {
     id: number;
-    name: string;
-    genre: string;
-    description: string;
+    platform: string;
+    url: string;
+    followers: string;
+    artist_id: number;
 }
 
 interface Props {
-    socialmedia: SocialMedia;
+    socialMedia: SocialMedia;
+    artists: ArtistType[];
 }
 
-export default function Edit({ socialmedia }: Props) {
+export default function Edit() {
+    const { socialMedia, artists } = usePage().props as Props;
 
     const { data, setData, put, processing, errors } = useForm({
-        name: socialmedia.name,
-        genre: socialmedia.genre,
-        description: socialmedia.description,
+        platform: socialMedia.platform || '',
+        url: socialMedia.url || '',
+        followers: socialMedia.followers || '',
+        artist_id: socialMedia.artist_id ? socialMedia.artist_id.toString() : '',
     });
 
     const handleUpdate = (e: React.FormEvent) => {
         e.preventDefault();
-        put(route('socialmedias.update', socialmedia.id));
+        put(route('social-medias.update', socialMedia.id));
     }
 
-    return (
-        <AppLayout breadcrumbs={[{title: 'Edit a SocialMedia', href: `/socialmedias/${socialmedia.id}/edit`}]}>
-            <Head title="Update a SocialMedia" />
-            <div className="w-8/12 p-4">
-                <form onSubmit={handleUpdate} className="space-y-4">
-                    {/* Display error */}
+    const platforms = [
+        'Instagram',
+        'Twitter',
+        'Facebook',
+        'TikTok',
+        'YouTube',
+        'Spotify',
+        'SoundCloud',
+        'Bandcamp',
+        'Other'
+    ];
 
+    return (
+        <AppLayout breadcrumbs={[{title: 'Edit Social Media', href: `/social-medias/${socialMedia.id}/edit`}]}>
+            <Head title="Update Social Media" />
+            
+            <div className="w-8/12 p-4">
+                <div className="space-y-4">
+                    {/* ERRORES */}
                     {Object.keys(errors).length > 0 && (
                         <Alert>
                             <CircleAlert />
@@ -52,20 +72,71 @@ export default function Edit({ socialmedia }: Props) {
                             </AlertDescription>
                         </Alert>
                     )}
-                    <div className='gap-1.5'>
-                        <Label htmlFor="socialmedia name">Name</Label>
-                        <Input placeholder="SocialMedia Name" value={data.name} onChange={(e) => setData('name', e.target.value)}></Input>
+
+                    {/* ARTIST */}
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="artist">Artist</Label>
+                        <select 
+                            value={data.artist_id}
+                            onChange={(e) => setData('artist_id', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                            <option value="">Select an artist</option>
+                            {artists.map(artist => (
+                                <option key={artist.id} value={artist.id}>
+                                    {artist.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
-                    <div className='gap-1.5'>
-                        <Label htmlFor="socialmedia genre">Genre</Label>
-                        <Input placeholder="Genre" value={data.genre} onChange={(e) => setData('genre', e.target.value)}></Input>
+
+                    {/* PLATFORM */}
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="platform">Platform</Label>
+                        <select 
+                            value={data.platform}
+                            onChange={(e) => setData('platform', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                            <option value="">Select platform</option>
+                            {platforms.map(platform => (
+                                <option key={platform} value={platform}>
+                                    {platform}
+                                </option>
+                            ))}
+                        </select>
                     </div>
-                    <div className='gap-1.5'>
-                        <Label htmlFor="socialmedia description">Description</Label>
-                        <Textarea placeholder="Description" value={data.description} onChange={(e) => setData('description', e.target.value)}></Textarea>
+
+                    {/* URL */}
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="url">URL</Label>
+                        <Input 
+                            type="url"
+                            placeholder="https://instagram.com/artist" 
+                            value={data.url} 
+                            onChange={(e) => setData('url', e.target.value)}
+                        />
                     </div>
-                    <Button disabled={processing} type="submit" className="mt-4">Update SocialMedia</Button>
-                </form>
+
+                    {/* FOLLOWERS */}
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="followers">Followers (Optional)</Label>
+                        <Input 
+                            placeholder="1.5M" 
+                            value={data.followers} 
+                            onChange={(e) => setData('followers', e.target.value)}
+                        />
+                    </div>
+
+                    {/* SUBMIT */}
+                    <Button 
+                        disabled={processing} 
+                        onClick={handleUpdate} 
+                        className="mt-4"
+                    >
+                        {processing ? 'Updating...' : 'Update Social Media'}
+                    </Button>
+                </div>
             </div>
         </AppLayout>
     );

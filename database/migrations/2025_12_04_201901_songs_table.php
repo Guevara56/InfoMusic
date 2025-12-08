@@ -14,8 +14,9 @@ return new class extends Migration
     Schema::create('songs', function (Blueprint $table) {
         $table->id();
         $table->string('title');
-        $table->integer('duration')->nullable(); // en segundos
-        $table->date('release_date')->nullable();
+        $table->string('duration')->nullable();  // "3:45"
+        $table->string('release_year')->nullable();  // "2024"
+        $table->foreignId('artist_id')->constrained('artists')->onDelete('cascade');
         $table->timestamps();
     });
 
@@ -25,15 +26,19 @@ return new class extends Migration
         $table->id();
         $table->foreignId('artist_id')->constrained()->onDelete('cascade');
         $table->foreignId('song_id')->constrained()->onDelete('cascade');
+        $table->unique(['artist_id', 'song_id']);
+        $table->timestamps();
     });
 
     // Tabla pivote para la relación muchos a muchos entre canciones y géneros
 
     Schema::create('genre_song', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('genre_id')->constrained()->onDelete('cascade');
-        $table->foreignId('song_id')->constrained()->onDelete('cascade');
-    });
+            $table->id();
+            $table->foreignId('genre_id')->constrained('genres')->onDelete('cascade');
+            $table->foreignId('song_id')->constrained('songs')->onDelete('cascade');
+            $table->unique(['genre_id', 'song_id']);
+            $table->timestamps();
+        });
 
     }
 

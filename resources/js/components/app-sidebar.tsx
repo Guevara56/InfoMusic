@@ -50,8 +50,8 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Social Medias',
-        href: '/socialmedias',
-        icon: UserPlus  ,
+        href: '/social-medias',
+        icon: UserPlus,
     },
     {
         title: 'Dashboard',

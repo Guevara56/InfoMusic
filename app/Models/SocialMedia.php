@@ -7,8 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class SocialMedia extends Model
 {
     protected $table = 'social_media';
-
-    protected $fillable = ['artist_id', 'platform', 'url'];
+    
+    protected $fillable = [
+        'platform',
+        'url',
+        'followers',
+        'artist_id',
+    ];
 
     public function artist()
     {

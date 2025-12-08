@@ -2,68 +2,152 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import { CircleAlert } from 'lucide-react';
 
-
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Create',
-        href: '/socailmedias/create',
+        title: 'Create Social Media',
+        href: '/social-medias/create',
     },
 ];
 
-export default function Create() {
+interface ArtistType {
+    id: number;
+    name: string;
+}
 
-    const {data, setData, post, processing, errors} = useForm({
-        name: '',
-        genre: '',
-        description: '',
-    });  
+interface Props {
+    artists: ArtistType[];
+}
+
+export default function Create() {
+    const { artists } = usePage().props as Props;
+
+    const { data, setData, post, processing, errors } = useForm({
+        platform: '',
+        url: '',
+        followers: '',
+        artist_id: '',
+    });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('socailmedias.store'));
+        post(route('social-medias.store'));
     }
+
+    const platforms = [
+        'Instagram',
+        'Twitter',
+        'Facebook',
+        'TikTok',
+        'YouTube',
+        'Spotify',
+        'SoundCloud',
+        'Bandcamp',
+        'Other'
+    ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Create a New Social Media" />
-            <div className ="w-8/12 p-4">
-                <form onSubmit={handleSubmit}className = "space-y-4">
-                     {/* Display error */}
-
-                     {Object.keys(errors).length > 0 && (
+            <Head title="Create Social Media" />
+            
+            <div className="w-8/12 p-4">
+                <div className="space-y-4">
+                    {/* ERRORES */}
+                    {Object.keys(errors).length > 0 && (
                         <Alert>
-                        <CircleAlert />
-                        <AlertTitle>Errors!</AlertTitle>
-                        <AlertDescription>
-                            <ul>
-                                {Object.entries(errors).map(([key,message])=> (
-                                    <li key={key}>{message as string}</li>
-                                ))}
-                            </ul>
-                        </AlertDescription>
+                            <CircleAlert />
+                            <AlertTitle>Errors!</AlertTitle>
+                            <AlertDescription>
+                                <ul>
+                                    {Object.entries(errors).map(([key, message]) => (
+                                        <li key={key}>{message as string}</li>
+                                    ))}
+                                </ul>
+                            </AlertDescription>
                         </Alert>
-                     )}
-                    <div className='gap-1.5'>
-                        <Label htmlFor="socailmedia name">Name</Label>
-                        <Input placeholder=" Name" value = {data.name} onChange={(e) => setData('name', e.target.value)}></Input>
+                    )}
+
+                    {/* ARTIST */}
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="artist">Artist</Label>
+                        <select 
+                            value={data.artist_id}
+                            onChange={(e) => setData('artist_id', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                            <option value="">Select an artist</option>
+                            {artists.map(artist => (
+                                <option key={artist.id} value={artist.id}>
+                                    {artist.name}
+                                </option>
+                            ))}
+                        </select>
+                        {errors.artist_id && (
+                            <p className="text-red-500 text-sm mt-1">{errors.artist_id}</p>
+                        )}
                     </div>
-                    <div className='gap-1.5'>
-                        <Label htmlFor="socailmedia genre">Genre</Label>
-                        <Input placeholder="Genre" value = {data.genre} onChange={(e) => setData('genre', e.target.value)}></Input>
+
+                    {/* PLATFORM */}
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="platform">Platform</Label>
+                        <select 
+                            value={data.platform}
+                            onChange={(e) => setData('platform', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                            <option value="">Select platform</option>
+                            {platforms.map(platform => (
+                                <option key={platform} value={platform}>
+                                    {platform}
+                                </option>
+                            ))}
+                        </select>
+                        {errors.platform && (
+                            <p className="text-red-500 text-sm mt-1">{errors.platform}</p>
+                        )}
                     </div>
-                    <div className='gap-1.5'>
-                        <Label htmlFor="socailmedia description">Description</Label>
-                        <Textarea placeholder="Description" value = {data.description} onChange={(e) => setData('description', e.target.value)}></Textarea>
+
+                    {/* URL */}
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="url">URL</Label>
+                        <Input 
+                            type="url"
+                            placeholder="https://instagram.com/artist" 
+                            value={data.url} 
+                            onChange={(e) => setData('url', e.target.value)}
+                        />
+                        {errors.url && (
+                            <p className="text-red-500 text-sm mt-1">{errors.url}</p>
+                        )}
                     </div>
-                    <Button disabled={processing} type="submit" className="mt-4">Add Social Media</Button>
-                </form>
+
+                    {/* FOLLOWERS */}
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="followers">Followers (Optional)</Label>
+                        <Input 
+                            placeholder="1.5M" 
+                            value={data.followers} 
+                            onChange={(e) => setData('followers', e.target.value)}
+                        />
+                        {errors.followers && (
+                            <p className="text-red-500 text-sm mt-1">{errors.followers}</p>
+                        )}
+                    </div>
+
+                    {/* SUBMIT */}
+                    <Button 
+                        disabled={processing} 
+                        onClick={handleSubmit} 
+                        className="mt-4"
+                    >
+                        {processing ? 'Creating...' : 'Add Social Media'}
+                    </Button>
+                </div>
             </div>
         </AppLayout>
     );

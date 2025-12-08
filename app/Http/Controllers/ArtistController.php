@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use App\Models\Artist;
 use App\Models\Label;
+use App\Models\Genre;
 use Illuminate\Http\Request;
 
 class ArtistController extends Controller
@@ -18,10 +19,11 @@ class ArtistController extends Controller
     public function create()
     {
         $labels = Label::all();
-        return Inertia::render('Artists/Create', compact('labels'));
+        $genres = Genre::orderBy('name')->get();
+        return Inertia::render('Artists/Create', compact('labels', 'genres'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, Artist $artist)
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -30,9 +32,15 @@ class ArtistController extends Controller
             'country' => 'nullable|string|max:255',
             'formed_year' => 'nullable|string|max:4',
             'label_id' => 'nullable|exists:labels,id',
+            'genre_ids' => 'nullable|array',  // NUEVO
+            'genre_ids.*' => 'exists:genres,id',  // Validar cada ID
         ]);
 
-        Artist::create($request->all());
+         $artist = Artist::create($request->except('genre_ids'));
+         
+        if ($request->genre_ids) {
+        $artist->genres()->attach($request->genre_ids);
+        }
 
         return redirect()->route('artists.index')->with('message', 'Artist created successfully.');
     }

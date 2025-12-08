@@ -2,28 +2,44 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import { CircleAlert } from 'lucide-react';
 
-
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Create',
+        title: 'Create Song',
         href: '/songs/create',
     },
 ];
 
-export default function Create() {
+interface ArtistType {
+    id: number;
+    name: string;
+}
 
-    const {data, setData, post, processing, errors} = useForm({
-        name: '',
-        genre: '',
-        description: '',
-    });  
+interface GenreType {
+    id: number;
+    name: string;
+}
+
+interface Props {
+    artists: ArtistType[];
+    genres: GenreType[];
+}
+
+export default function Create() {
+    const { artists, genres } = usePage().props as Props;
+
+    const { data, setData, post, processing, errors } = useForm({
+        title: '',
+        duration: '',
+        release_year: '',
+        artist_id: '',
+        genre_ids: [] as string[],
+    });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -33,37 +49,111 @@ export default function Create() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create a New Song" />
-            <div className ="w-8/12 p-4">
-                <form onSubmit={handleSubmit}className = "space-y-4">
-                     {/* Display error */}
-
-                     {Object.keys(errors).length > 0 && (
+            
+            <div className="w-8/12 p-4">
+                <div className="space-y-4">
+                    {/* ERRORES */}
+                    {Object.keys(errors).length > 0 && (
                         <Alert>
-                        <CircleAlert />
-                        <AlertTitle>Errors!</AlertTitle>
-                        <AlertDescription>
-                            <ul>
-                                {Object.entries(errors).map(([key,message])=> (
-                                    <li key={key}>{message as string}</li>
-                                ))}
-                            </ul>
-                        </AlertDescription>
+                            <CircleAlert />
+                            <AlertTitle>Errors!</AlertTitle>
+                            <AlertDescription>
+                                <ul>
+                                    {Object.entries(errors).map(([key, message]) => (
+                                        <li key={key}>{message as string}</li>
+                                    ))}
+                                </ul>
+                            </AlertDescription>
                         </Alert>
-                     )}
-                    <div className='gap-1.5'>
-                        <Label htmlFor="artist name">Name</Label>
-                        <Input placeholder=" Name" value = {data.name} onChange={(e) => setData('name', e.target.value)}></Input>
+                    )}
+
+                    {/* TITLE */}
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="title">Title</Label>
+                        <Input 
+                            placeholder="Song Title" 
+                            value={data.title} 
+                            onChange={(e) => setData('title', e.target.value)}
+                            autoFocus
+                        />
                     </div>
-                    <div className='gap-1.5'>
-                        <Label htmlFor="artist genre">Genre</Label>
-                        <Input placeholder="Genre" value = {data.genre} onChange={(e) => setData('genre', e.target.value)}></Input>
+
+                    {/* ARTIST (SELECT UNO SOLO) */}
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="artist">Artist</Label>
+                        <select 
+                            value={data.artist_id}
+                            onChange={(e) => setData('artist_id', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                            <option value="">Select an artist</option>
+                            {artists.map(artist => (
+                                <option key={artist.id} value={artist.id}>
+                                    {artist.name}
+                                </option>
+                            ))}
+                        </select>
+                        {errors.artist_id && (
+                            <p className="text-red-500 text-sm mt-1">{errors.artist_id}</p>
+                        )}
                     </div>
-                    <div className='gap-1.5'>
-                        <Label htmlFor="artist description">Description</Label>
-                        <Textarea placeholder="Description" value = {data.description} onChange={(e) => setData('description', e.target.value)}></Textarea>
+
+                    {/* GENRES (SELECT MÚLTIPLE) */}
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="genres">Genres</Label>
+                        {genres && genres.length > 0 ? (
+                            <select 
+                                multiple
+                                value={data.genre_ids}
+                                onChange={(e) => {
+                                    const selected = Array.from(e.target.selectedOptions, opt => opt.value);
+                                    setData('genre_ids', selected);
+                                }}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                size={5}
+                            >
+                                {genres.map((genre: GenreType) => (
+                                    <option key={genre.id} value={genre.id}>
+                                        {genre.name}
+                                    </option>
+                                ))}
+                            </select>
+                        ) : (
+                            <p className="text-gray-500 text-sm">No genres available</p>
+                        )}
+                        <p className="text-xs text-gray-500">Hold Ctrl/Cmd to select multiple</p>
                     </div>
-                    <Button disabled={processing} type="submit" className="mt-4">Add Song</Button>
-                </form>
+
+                    {/* DURATION */}
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="duration">Duration</Label>
+                        <Input 
+                            placeholder="3:45" 
+                            value={data.duration} 
+                            onChange={(e) => setData('duration', e.target.value)}
+                        />
+                        <p className="text-xs text-gray-500">Format: MM:SS (e.g., 3:45)</p>
+                    </div>
+
+                    {/* RELEASE YEAR */}
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="release_year">Release Year</Label>
+                        <Input 
+                            placeholder="2024" 
+                            value={data.release_year} 
+                            onChange={(e) => setData('release_year', e.target.value)}
+                        />
+                    </div>
+
+                    {/* SUBMIT */}
+                    <Button 
+                        disabled={processing} 
+                        onClick={handleSubmit} 
+                        className="mt-4"
+                    >
+                        {processing ? 'Creating...' : 'Add Song'}
+                    </Button>
+                </div>
             </div>
         </AppLayout>
     );

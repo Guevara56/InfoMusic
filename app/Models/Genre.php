@@ -3,10 +3,22 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Genre extends Model
 {
-    protected $fillable = ['name', 'slug'];
+    protected $fillable = ['name', 'description', 'slug'];
+
+       protected static function boot()
+    {
+        parent::boot();
+        
+        static::creating(function ($genre) {
+            if (empty($genre->slug)) {
+                $genre->slug = Str::slug($genre->name);
+            }
+        });
+    }
 
     public function songs()
     {

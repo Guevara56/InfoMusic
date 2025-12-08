@@ -13,12 +13,14 @@ return new class extends Migration
             $table->string('name');
             $table->string('country')->nullable();
             $table->text('description')->nullable();
+            $table->string('logo')->nullable();  // URL del logo
+            $table->string('website')->nullable();  // Sitio web oficial
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('labels');
+        Schema::dropIfExists('label');
     }
 };

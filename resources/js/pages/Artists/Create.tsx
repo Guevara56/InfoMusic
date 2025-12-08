@@ -23,13 +23,21 @@ interface LabelType {
     name: string;
 }
 
+interface GenreType {
+    id: number;
+    name: string;
+}
+
 interface Props {
     labels: LabelType[];
+    genres: GenreType[];
 }
 
 export default function Create() {
-    const { labels } = usePage().props as Props;
+    // ✅ CORRECCIÓN 1: Desestructurar labels Y genres
+    const { labels, genres } = usePage().props as Props;
 
+    // ✅ CORRECCIÓN 2: genre_ids debe ser ARRAY, no string
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         bio: '',
@@ -37,6 +45,7 @@ export default function Create() {
         formed_year: '',
         avatar: '',
         label_id: '',
+        genre_ids: [] as string[],  // ← Array de strings
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -73,18 +82,18 @@ export default function Create() {
 
                     <div className='space-y-1.5'>
                         <Label htmlFor="name">Name</Label>
-                        <Input 
-                            placeholder="Artist Name" 
-                            value={data.name} 
+                        <Input
+                            placeholder="Artist Name"
+                            value={data.name}
                             onChange={(e) => setData('name', e.target.value)}
                         />
                     </div>
 
                     <div className='space-y-1.5'>
                         <Label htmlFor="bio">Bio</Label>
-                        <Textarea 
-                            placeholder="Biography" 
-                            value={data.bio} 
+                        <Textarea
+                            placeholder="Biography"
+                            value={data.bio}
                             onChange={(e) => setData('bio', e.target.value)}
                         />
                     </div>
@@ -98,7 +107,7 @@ export default function Create() {
                             options={countryOptions}
                             placeholder="Select a country"
                             isSearchable
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            isClearable
                             styles={{
                                 control: (base) => ({
                                     ...base,
@@ -118,27 +127,49 @@ export default function Create() {
                         )}
                     </div>
 
+                    {/* ✅ CORRECCIÓN 3: Agregar tipado al genre en map */}
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="genres">Genres</Label>
+                        <select
+                            multiple
+                            value={data.genre_ids}
+                            onChange={(e) => {
+                                const selected = Array.from(e.target.selectedOptions, opt => opt.value);
+                                setData('genre_ids', selected);
+                            }}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            size={5}
+                        >
+                            {genres.map((genre: GenreType) => (
+                                <option key={genre.id} value={genre.id}>
+                                    {genre.name}
+                                </option>
+                            ))}
+                        </select>
+                        <p className="text-xs text-gray-500">Hold Ctrl/Cmd to select multiple</p>
+                    </div>
+
                     <div className='space-y-1.5'>
                         <Label htmlFor="formed_year">Formed Year</Label>
-                        <Input 
-                            placeholder="1960" 
-                            value={data.formed_year} 
+                        <Input
+                            placeholder="1960"
+                            value={data.formed_year}
                             onChange={(e) => setData('formed_year', e.target.value)}
                         />
                     </div>
 
                     <div className='space-y-1.5'>
                         <Label htmlFor="avatar">Avatar URL</Label>
-                        <Input 
-                            placeholder="https://..." 
-                            value={data.avatar} 
+                        <Input
+                            placeholder="https://..."
+                            value={data.avatar}
                             onChange={(e) => setData('avatar', e.target.value)}
                         />
                     </div>
 
                     <div className='space-y-1.5'>
                         <Label htmlFor="label">Label (Optional)</Label>
-                        <select 
+                        <select
                             value={data.label_id}
                             onChange={(e) => setData('label_id', e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -152,12 +183,12 @@ export default function Create() {
                         </select>
                     </div>
 
-                    <Button 
-                        disabled={processing} 
-                        onClick={handleSubmit} 
+                    <Button
+                        disabled={processing}
+                        onClick={handleSubmit}
                         className="mt-4"
                     >
-                        Add Artist
+                        {processing ? 'Creating...' : 'Add Artist'}
                     </Button>
                 </div>
             </div>

@@ -11,26 +11,26 @@ import { CircleAlert } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Create Genre',
-        href: '/genres/create',
+        title: 'Create Product Category',
+        href: '/product-categories/create',
     },
 ];
 
 export default function Create() {
     const { data, setData, post, processing, errors } = useForm({
         name: '',
+        icon: '',
         description: '',
     });
-    // Nota: NO incluimos slug porque se genera automáticamente en el modelo
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('genres.store'));
+        post(route('product-categories.store'));
     }
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Create a New Genre" />
+            <Head title="Create a New Product Category" />
             
             <div className="w-8/12 p-4">
                 <div className="space-y-4">
@@ -53,7 +53,7 @@ export default function Create() {
                     <div className='space-y-1.5'>
                         <Label htmlFor="name">Name</Label>
                         <Input 
-                            placeholder="Genre Name (e.g., Rock, Pop, Jazz)" 
+                            placeholder="Category Name (e.g., Vinyl, CD, T-Shirt)" 
                             value={data.name} 
                             onChange={(e) => setData('name', e.target.value)}
                             autoFocus
@@ -62,32 +62,43 @@ export default function Create() {
                             <p className="text-red-500 text-sm mt-1">{errors.name}</p>
                         )}
                         <p className="text-gray-500 text-xs">
-                            The slug will be generated automatically (e.g., "Rock and Roll" → "rock-and-roll")
+                            The slug will be generated automatically (e.g., "T-Shirt" → "t-shirt")
+                        </p>
+                    </div>
+
+                    {/* ICON */}
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="icon">Icon (Emoji)</Label>
+                        <Input 
+                            placeholder="💿 (paste an emoji)" 
+                            value={data.icon} 
+                            onChange={(e) => setData('icon', e.target.value)}
+                            maxLength={2}
+                        />
+                        <p className="text-gray-500 text-xs">
+                            Use an emoji to represent this category (e.g., 💿 💽 👕 📼)
                         </p>
                     </div>
 
                     {/* DESCRIPTION */}
                     <div className='space-y-1.5'>
-                        <Label htmlFor="description">Description</Label>
+                        <Label htmlFor="description">Description (Optional)</Label>
                         <Textarea 
-                            placeholder="Describe this music genre..."
+                            placeholder="Describe this product category..."
                             value={data.description} 
                             onChange={(e) => setData('description', e.target.value)}
-                            rows={5}
+                            rows={3}
                         />
-                        {errors.description && (
-                            <p className="text-red-500 text-sm mt-1">{errors.description}</p>
-                        )}
                     </div>
 
-                    {/* EJEMPLO DE PREVIEW DEL SLUG */}
+                    {/* PREVIEW */}
                     {data.name && (
                         <div className="p-3 bg-gray-100 rounded-md">
                             <p className="text-sm text-gray-600">
-                                <strong>URL Preview:</strong> /genres/
-                                <span className="text-blue-600">
-                                    {data.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}
-                                </span>
+                                <strong>Preview:</strong> {data.icon} {data.name}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">
+                                <strong>Slug:</strong> {data.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}
                             </p>
                         </div>
                     )}
@@ -98,7 +109,7 @@ export default function Create() {
                         onClick={handleSubmit} 
                         className="mt-4"
                     >
-                        {processing ? 'Creating...' : 'Add Genre'}
+                        {processing ? 'Creating...' : 'Add Category'}
                     </Button>
                 </div>
             </div>

@@ -4,27 +4,34 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import { route } from 'ziggy-js';
-import { CircleAlert } from 'lucide-react'; 
+import { CircleAlert } from 'lucide-react';
+import countries from 'world-countries';
+import Select from 'react-select';
 
-interface Label {
+interface LabelData {
     id: number;
     name: string;
-    genre: string;
+    country: string;
     description: string;
+    logo: string;
+    website: string;
 }
 
 interface Props {
-    label: Label;
+    label: LabelData;
 }
 
-export default function Edit({ label }: Props) {
+export default function Edit() {
+    const { label } = usePage().props as Props;
 
     const { data, setData, put, processing, errors } = useForm({
-        name: label.name,
-        genre: label.genre,
-        description: label.description,
+        name: label.name || '',
+        country: label.country || '',
+        description: label.description || '',
+        logo: label.logo || '',
+        website: label.website || '',
     });
 
     const handleUpdate = (e: React.FormEvent) => {
@@ -32,13 +39,19 @@ export default function Edit({ label }: Props) {
         put(route('labels.update', label.id));
     }
 
-    return (
-        <AppLayout breadcrumbs={[{title: 'Edit a Label', href: `/labels/${label.id}/edit`}]}>
-            <Head title="Update a Label" />
-            <div className="w-8/12 p-4">
-                <form onSubmit={handleUpdate} className="space-y-4">
-                    {/* Display error */}
+    const countryOptions = countries
+        .map(country => ({
+            value: country.name.common,
+            label: `${country.flag} ${country.name.common}`,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label));
 
+    return (
+        <AppLayout breadcrumbs={[{title: 'Edit Label', href: `/labels/${label.id}/edit`}]}>
+            <Head title="Update Label" />
+            
+            <div className="w-8/12 p-4">
+                <div className="space-y-4">
                     {Object.keys(errors).length > 0 && (
                         <Alert>
                             <CircleAlert />
@@ -52,20 +65,80 @@ export default function Edit({ label }: Props) {
                             </AlertDescription>
                         </Alert>
                     )}
-                    <div className='gap-1.5'>
-                        <Label htmlFor="label name">Name</Label>
-                        <Input placeholder="Label Name" value={data.name} onChange={(e) => setData('name', e.target.value)}></Input>
+
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="name">Name</Label>
+                        <Input 
+                            placeholder="Record Label Name" 
+                            value={data.name} 
+                            onChange={(e) => setData('name', e.target.value)}
+                            autoFocus
+                        />
                     </div>
-                    <div className='gap-1.5'>
-                        <Label htmlFor="label genre">Genre</Label>
-                        <Input placeholder="Genre" value={data.genre} onChange={(e) => setData('genre', e.target.value)}></Input>
+
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="country">Country</Label>
+                        <Select
+                            value={countryOptions.find(opt => opt.value === data.country) || null}
+                            onChange={(option) => setData('country', option?.value || '')}
+                            options={countryOptions}
+                            placeholder="Select a country"
+                            isSearchable
+                            isClearable
+                            styles={{
+                                control: (base) => ({
+                                    ...base,
+                                    borderColor: '#d1d5db',
+                                    borderRadius: '0.375rem',
+                                    padding: '0.125rem',
+                                    minHeight: '42px',
+                                }),
+                                menu: (base) => ({
+                                    ...base,
+                                    zIndex: 50,
+                                }),
+                            }}
+                        />
                     </div>
-                    <div className='gap-1.5'>
-                        <Label htmlFor="label description">Description</Label>
-                        <Textarea placeholder="Description" value={data.description} onChange={(e) => setData('description', e.target.value)}></Textarea>
+
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="description">Description</Label>
+                        <Textarea 
+                            placeholder="About this record label..." 
+                            value={data.description} 
+                            onChange={(e) => setData('description', e.target.value)}
+                            rows={5}
+                        />
                     </div>
-                    <Button disabled={processing} type="submit" className="mt-4">Update Label</Button>
-                </form>
+
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="logo">Logo URL (Optional)</Label>
+                        <Input 
+                            type="url"
+                            placeholder="https://..." 
+                            value={data.logo} 
+                            onChange={(e) => setData('logo', e.target.value)}
+                        />
+                    </div>
+
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="website">Website (Optional)</Label>
+                        <Input 
+                            type="url"
+                            placeholder="https://..." 
+                            value={data.website} 
+                            onChange={(e) => setData('website', e.target.value)}
+                        />
+                    </div>
+
+                    <Button 
+                        disabled={processing} 
+                        onClick={handleUpdate} 
+                        className="mt-4"
+                    >
+                        {processing ? 'Updating...' : 'Update Label'}
+                    </Button>
+                </div>
             </div>
         </AppLayout>
     );

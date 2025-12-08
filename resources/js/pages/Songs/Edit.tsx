@@ -2,29 +2,45 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import { route } from 'ziggy-js';
-import { CircleAlert } from 'lucide-react'; 
+import { CircleAlert } from 'lucide-react';
+
+interface ArtistType {
+    id: number;
+    name: string;
+}
+
+interface GenreType {
+    id: number;
+    name: string;
+}
 
 interface Song {
     id: number;
-    name: string;
-    genre: string;
-    description: string;
+    title: string;
+    duration: string;
+    release_year: string;
+    artist_id: number;
+    genres: GenreType[];
 }
 
 interface Props {
     song: Song;
+    artists: ArtistType[];
+    genres: GenreType[];
 }
 
-export default function Edit({ song }: Props) {
+export default function Edit() {
+    const { song, artists, genres } = usePage().props as Props;
 
     const { data, setData, put, processing, errors } = useForm({
-        name: song.name,
-        genre: song.genre,
-        description: song.description,
+        title: song.title || '',
+        duration: song.duration || '',
+        release_year: song.release_year || '',
+        artist_id: song.artist_id ? song.artist_id.toString() : '',
+        genre_ids: song.genres ? song.genres.map(g => g.id.toString()) : [] as string[],
     });
 
     const handleUpdate = (e: React.FormEvent) => {
@@ -33,12 +49,12 @@ export default function Edit({ song }: Props) {
     }
 
     return (
-        <AppLayout breadcrumbs={[{title: 'Edit a Song', href: `/songs/${song.id}/edit`}]}>
-            <Head title="Update a Song" />
+        <AppLayout breadcrumbs={[{title: 'Edit Song', href: `/songs/${song.id}/edit`}]}>
+            <Head title="Update Song" />
+            
             <div className="w-8/12 p-4">
-                <form onSubmit={handleUpdate} className="space-y-4">
-                    {/* Display error */}
-
+                <div className="space-y-4">
+                    {/* ERRORES */}
                     {Object.keys(errors).length > 0 && (
                         <Alert>
                             <CircleAlert />
@@ -52,20 +68,86 @@ export default function Edit({ song }: Props) {
                             </AlertDescription>
                         </Alert>
                     )}
-                    <div className='gap-1.5'>
-                        <Label htmlFor="song name">Name</Label>
-                        <Input placeholder="Song Name" value={data.name} onChange={(e) => setData('name', e.target.value)}></Input>
+
+                    {/* TITLE */}
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="title">Title</Label>
+                        <Input 
+                            placeholder="Song Title" 
+                            value={data.title} 
+                            onChange={(e) => setData('title', e.target.value)}
+                            autoFocus
+                        />
                     </div>
-                    <div className='gap-1.5'>
-                        <Label htmlFor="song genre">Genre</Label>
-                        <Input placeholder="Genre" value={data.genre} onChange={(e) => setData('genre', e.target.value)}></Input>
+
+                    {/* ARTIST */}
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="artist">Artist</Label>
+                        <select 
+                            value={data.artist_id}
+                            onChange={(e) => setData('artist_id', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                            <option value="">Select an artist</option>
+                            {artists.map(artist => (
+                                <option key={artist.id} value={artist.id}>
+                                    {artist.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
-                    <div className='gap-1.5'>
-                        <Label htmlFor="song description">Description</Label>
-                        <Textarea placeholder="Description" value={data.description} onChange={(e) => setData('description', e.target.value)}></Textarea>
+
+                    {/* GENRES */}
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="genres">Genres</Label>
+                        <select 
+                            multiple
+                            value={data.genre_ids}
+                            onChange={(e) => {
+                                const selected = Array.from(e.target.selectedOptions, opt => opt.value);
+                                setData('genre_ids', selected);
+                            }}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            size={5}
+                        >
+                            {genres.map((genre: GenreType) => (
+                                <option key={genre.id} value={genre.id}>
+                                    {genre.name}
+                                </option>
+                            ))}
+                        </select>
+                        <p className="text-xs text-gray-500">Hold Ctrl/Cmd to select multiple</p>
                     </div>
-                    <Button disabled={processing} type="submit" className="mt-4">Update Song</Button>
-                </form>
+
+                    {/* DURATION */}
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="duration">Duration</Label>
+                        <Input 
+                            placeholder="3:45" 
+                            value={data.duration} 
+                            onChange={(e) => setData('duration', e.target.value)}
+                        />
+                    </div>
+
+                    {/* RELEASE YEAR */}
+                    <div className='space-y-1.5'>
+                        <Label htmlFor="release_year">Release Year</Label>
+                        <Input 
+                            placeholder="2024" 
+                            value={data.release_year} 
+                            onChange={(e) => setData('release_year', e.target.value)}
+                        />
+                    </div>
+
+                    {/* SUBMIT */}
+                    <Button 
+                        disabled={processing} 
+                        onClick={handleUpdate} 
+                        className="mt-4"
+                    >
+                        {processing ? 'Updating...' : 'Update Song'}
+                    </Button>
+                </div>
             </div>
         </AppLayout>
     );

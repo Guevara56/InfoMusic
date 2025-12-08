@@ -17,47 +17,44 @@ import {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Genres',
-        href: '/genres',
+        title: 'Product Categories',
+        href: '/product-categories',
     },
 ];
 
-/**
- * Interface para Genre
- */
-interface Genre {
+interface Category {
     id: number;
     name: string;
     slug: string;
+    icon: string;
     description: string;
-    artists_count?: number;  // Conteo de artistas (viene de withCount)
-    songs_count?: number;    // Conteo de canciones (viene de withCount)
+    products_count?: number;
 }
 
 interface PageProps {
     flash: {
         message?: string;
     };
-    genres: Genre[];
+    categories: Category[];
 }
 
 export default function Index() {
-    const { genres, flash } = usePage().props as PageProps;
+    const { categories, flash } = usePage().props as PageProps;
     const { processing, delete: destroy } = useForm();
 
     const handleDelete = (id: number, name: string) => {
-        if (confirm(`Do you want to delete genre - ${name}?`)) {
-            destroy(route('genres.destroy', id));
+        if (confirm(`Do you want to delete category - ${name}?`)) {
+            destroy(route('product-categories.destroy', id));
         }
     }
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Genres" />
+            <Head title="Product Categories" />
             
             <div className="m-4">
-                <Link href={route('genres.create')}>
-                    <Button>Create Genre</Button>
+                <Link href={route('product-categories.create')}>
+                    <Button>Create Category</Button>
                 </Link>
             </div>
             
@@ -71,48 +68,35 @@ export default function Index() {
                 )}
             </div>
             
-            {genres.length > 0 && (
+            {categories.length > 0 && (
                 <div className="m-4">
                     <Table>
-                        <TableCaption>A list of your music genres.</TableCaption>
+                        <TableCaption>A list of product categories.</TableCaption>
                         <TableHeader>
                             <TableRow>
                                 <TableHead className="w-[100px]">ID</TableHead>
+                                <TableHead>Icon</TableHead>
                                 <TableHead>Name</TableHead>
                                 <TableHead>Slug</TableHead>
-                                <TableHead>Description</TableHead>
-                                <TableHead className="text-center">Artists</TableHead>
-                                <TableHead className="text-center">Songs</TableHead>
+                                <TableHead>Products</TableHead>
                                 <TableHead className="text-center">Action</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {genres.map((genre) => (
-                                <TableRow key={genre.id}>
-                                    <TableCell className="font-medium">{genre.id}</TableCell>
-                                    <TableCell className="font-semibold">{genre.name}</TableCell>
-                                    <TableCell className="text-gray-600">{genre.slug}</TableCell>
-                                    <TableCell>
-                                        {genre.description 
-                                            ? (genre.description.length > 50 
-                                                ? genre.description.substring(0, 50) + '...' 
-                                                : genre.description)
-                                            : 'N/A'
-                                        }
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                        {genre.artists_count || 0}
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                        {genre.songs_count || 0}
-                                    </TableCell>
+                            {categories.map((category) => (
+                                <TableRow key={category.id}>
+                                    <TableCell className="font-medium">{category.id}</TableCell>
+                                    <TableCell className="text-2xl">{category.icon || '📦'}</TableCell>
+                                    <TableCell className="font-semibold">{category.name}</TableCell>
+                                    <TableCell className="text-gray-600">{category.slug}</TableCell>
+                                    <TableCell className="text-center">{category.products_count || 0}</TableCell>
                                     <TableCell className="text-center space-x-2">
-                                        <Link href={route('genres.edit', genre.id)}>
+                                        <Link href={route('product-categories.edit', category.id)}>
                                             <Button className='bg-slate-600 hover:bg-slate-700'>Edit</Button>
                                         </Link>
                                         <Button 
                                             disabled={processing} 
-                                            onClick={() => handleDelete(genre.id, genre.name)} 
+                                            onClick={() => handleDelete(category.id, category.name)} 
                                             className="bg-red-500 hover:bg-red-800"
                                         >
                                             Delete

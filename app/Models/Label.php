@@ -10,9 +10,13 @@ class Label extends Model
         'name',
         'country',
         'description',
+        'logo',
+        'website',
     ];
 
-    // Una discográfica tiene muchos artistas
+    /**
+     * Una discográfica tiene muchos artistas
+     */
     public function artists()
     {
         return $this->hasMany(Artist::class);

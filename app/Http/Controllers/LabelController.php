@@ -10,9 +10,13 @@ class LabelController extends Controller
 {
     public function index()
     {
-        $labels = Label::all();
+        $labels = Label::withCount('artists')
+                       ->orderBy('name')
+                       ->get();
+        
         return Inertia::render('Labels/Index', compact('labels'));
     }
+
     public function create()
     {
         return Inertia::render('Labels/Create');
@@ -22,20 +26,15 @@ class LabelController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'genre' => 'required|string|max:255',
+            'country' => 'nullable|string|max:255',
             'description' => 'nullable|string',
+            'logo' => 'nullable|url',
+            'website' => 'nullable|url',
         ]);
 
         Label::create($request->all());
 
         return redirect()->route('labels.index')->with('message', 'Label created successfully.');
-    }
-
-    public function destroy(Label $label)
-    {
-        $label->delete();
-
-        return redirect()->route('labels.index')->with('message', 'Label deleted successfully.');
     }
 
     public function edit(Label $label)
@@ -47,16 +46,26 @@ class LabelController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'genre' => 'required|string|max:255',
+            'country' => 'nullable|string|max:255',
             'description' => 'nullable|string',
+            'logo' => 'nullable|url',
+            'website' => 'nullable|url',
         ]);
 
-        $label->update([
-            'name' => 'required|string|max:255',
-            'genre' => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
+        $label->update($request->all());
 
         return redirect()->route('labels.index')->with('message', 'Label updated successfully.');
+    }
+
+    public function destroy(Label $label)
+    {
+        // Verificar si tiene artistas antes de borrar
+        if ($label->artists()->count() > 0) {
+            return back()->withErrors(['error' => 'Cannot delete label with artists. Reassign or delete artists first.']);
+        }
+
+        $label->delete();
+
+        return redirect()->route('labels.index')->with('message', 'Label deleted successfully.');
     }
 }

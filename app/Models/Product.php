@@ -6,7 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    protected $fillable = ['name', 'description', 'price', 'artist_id'];
+    protected $fillable = [
+        'name',
+        'description',
+        'price',
+        'artist_id',
+        'product_category_id'
+    ];
 
     public function artist()
     {
@@ -17,5 +23,9 @@ class Product extends Model
     {
         return $this->belongsToMany(Cart::class, 'cart_products')->withPivot('quantity')->withTimestamps();
     }
-    
+
+    public function category()
+    {
+        return $this->belongsTo(ProductCategory::class, 'product_category_id');
+    }
 }
