@@ -16,7 +16,6 @@ return new class extends Migration
         $table->string('title');
         $table->string('duration')->nullable();  // "3:45"
         $table->string('release_year')->nullable();  // "2024"
-        $table->foreignId('artist_id')->constrained('artists')->onDelete('cascade');
         $table->timestamps();
     });
 

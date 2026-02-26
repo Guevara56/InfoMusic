@@ -36,8 +36,8 @@ class ArtistController extends Controller
             'genre_ids.*' => 'exists:genres,id',  // Validar cada ID
         ]);
 
-         $artist = Artist::create($request->except('genre_ids'));
-         
+        $artist = Artist::create($request->except('genre_ids'));
+
         if ($request->genre_ids) {
         $artist->genres()->attach($request->genre_ids);
         }
