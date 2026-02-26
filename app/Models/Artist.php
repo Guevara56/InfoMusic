@@ -24,25 +24,25 @@ class Artist extends Model
     // Un artista tiene muchos productos
     public function products()
     {
-        return $this->hasMany(Product::class);
+        return $this->belongsToMany(Product::class, 'artist_product');
     }
 
     // Un artista tiene muchas canciones
     public function songs()
     {
-        return $this->hasMany(Song::class);
+        return $this->belongsToMany(Song::class, 'artist_song');
     }
 
     // Un artista tiene muchas redes sociales
     public function socialMedias()
     {
-        return $this->hasMany(SocialMedia::class);
+        return $this->belongsToMany(SocialMedia::class, 'artist_social_media');
     }
 
     // Un artista pertenece a muchos géneros y géneros tienen muchos artistas
     public function genres()
     {
         return $this->belongsToMany(Genre::class, 'artist_genre');
-    
+
     }
 }

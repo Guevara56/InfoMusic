@@ -25,7 +25,16 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->text('description')->nullable();
             $table->foreignId('product_category_id')->constrained('product_categories')->onDelete('restrict');
-            $table->foreignId('artist_id')->constrained('artists')->onDelete('cascade');
+            $table->timestamps();
+        });
+
+        // Tabla pivote para la relación muchos a muchos entre productos y artistas
+
+        Schema::create('artist_product', function (Blueprint $table) {
+            $table->id();
+            $table->foreignID('artist_id')->constrained()->onDelete('cascade');
+            $table->foreignID('product_id')->constrained()->onDelete('cascade');
+            $table->unique(['artist_id', 'product_id']);
             $table->timestamps();
         });
     }

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class SocialMedia extends Model
 {
     protected $table = 'social_media';
-    
+
     protected $fillable = [
         'platform',
         'url',
@@ -17,6 +17,6 @@ class SocialMedia extends Model
 
     public function artist()
     {
-        return $this->belongsTo(Artist::class);
+        return $this->belongsToMany(Artist::class, 'artist_social_media');
     }
 }
