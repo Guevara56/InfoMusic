@@ -13,11 +13,11 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen,LayoutGrid, Boxes, Music, Disc3, UserPlus  , MicVocal, User, SquareActivity, Github  } from 'lucide-react';
+import {LayoutGrid, Boxes, Music, Disc3, UserPlus  , MicVocal, User, SquareActivity} from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
-   
+
     {
         title: 'Users',
         href: '/users',
@@ -58,25 +58,13 @@ const mainNavItems: NavItem[] = [
         href: dashboard(),
         icon: LayoutGrid,
     },
-    
+
 ];
 
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Github',
-        href: 'https://github.com/Guevara56/InfoMusic',
-        icon: Github,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
-];
 
 export function AppSidebar() {
     return (
-        <Sidebar collapsible="icon" variant="inset">
+        <Sidebar collapsible="offcanvas" variant="floating">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
@@ -94,7 +82,6 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

@@ -32,11 +32,47 @@ import { cn, isSameUrl, resolveUrl } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
+import { BookOpen,LayoutGrid, Boxes, Music, Disc3, UserPlus  , MicVocal, User, SquareActivity, Menu,Folder,Search  } from 'lucide-react';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
 
+
 const mainNavItems: NavItem[] = [
+    {
+        title: 'Users',
+        href: '/users',
+        icon: User,
+    },
+    {
+        title: 'Products',
+        href: '/products',
+        icon: Boxes ,
+    },
+    {
+        title: 'Artists',
+        href: '/artists',
+        icon: MicVocal ,
+    },
+    {
+        title: 'Labels',
+        href: '/labels',
+        icon: Disc3,
+    },
+    {
+        title: 'Songs',
+        href: '/songs',
+        icon: Music,
+    },
+    {
+        title: 'Genres',
+        href: '/genres',
+        icon: SquareActivity ,
+    },
+    {
+        title: 'Social Medias',
+        href: '/social-medias',
+        icon: UserPlus,
+    },
     {
         title: 'Dashboard',
         href: dashboard(),
