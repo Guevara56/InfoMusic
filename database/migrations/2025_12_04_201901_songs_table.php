@@ -11,34 +11,34 @@ return new class extends Migration
      */
     public function up(): void
     {
-    Schema::create('songs', function (Blueprint $table) {
-        $table->id();
-        $table->string('title');
-        $table->string('duration')->nullable();  // "3:45"
-        $table->string('release_year')->nullable();  // "2024"
-        $table->timestamps();
-    });
+        Schema::create('songs', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->string('duration')->nullable();
+            $table->string('release_year')->nullable();
+            $table->foreignId('artist_id')->nullable()->constrained()->onDelete('cascade'); // 👈 añade esto
+            $table->timestamps();
+        });
 
-    // Tabla pivote para la relación muchos a muchos entre canciones y artistas
+        // Tabla pivote para la relación muchos a muchos entre canciones y artistas
 
-    Schema::create('artist_song', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('artist_id')->constrained()->onDelete('cascade');
-        $table->foreignId('song_id')->constrained()->onDelete('cascade');
-        $table->unique(['artist_id', 'song_id']);
-        $table->timestamps();
-    });
+        Schema::create('artist_song', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('artist_id')->constrained()->onDelete('cascade');
+            $table->foreignId('song_id')->constrained()->onDelete('cascade');
+            $table->unique(['artist_id', 'song_id']);
+            $table->timestamps();
+        });
 
-    // Tabla pivote para la relación muchos a muchos entre canciones y géneros
+        // Tabla pivote para la relación muchos a muchos entre canciones y géneros
 
-    Schema::create('genre_song', function (Blueprint $table) {
+        Schema::create('genre_song', function (Blueprint $table) {
             $table->id();
             $table->foreignId('genre_id')->constrained('genres')->onDelete('cascade');
             $table->foreignId('song_id')->constrained('songs')->onDelete('cascade');
             $table->unique(['genre_id', 'song_id']);
             $table->timestamps();
         });
-
     }
 
     /**

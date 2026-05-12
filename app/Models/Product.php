@@ -14,9 +14,10 @@ class Product extends Model
         'product_category_id'
     ];
 
+    // Un artista por producto (belongsTo)
     public function artist()
     {
-        return $this->belongsToMany(Artist::class, 'artist_product  ');
+        return $this->belongsTo(Artist::class);
     }
 
     public function carts()

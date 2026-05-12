@@ -42,11 +42,14 @@ export default function Index() {
     const { categories, flash } = usePage().props as PageProps;
     const { processing, delete: destroy } = useForm();
 
-    const handleDelete = (id: number, name: string) => {
-        if (confirm(`Do you want to delete category - ${name}?`)) {
-            destroy(route('product-categories.destroy', id));
-        }
+    const handleDelete = (id: number, name: string, productsCount: number) => {
+    if (productsCount > 0) {
+        if (!confirm(`La categoría "${name}" tiene ${productsCount} producto(s) asociados. ¿Seguro que quieres borrarla? Se borrarán todos sus productos también.`)) return;
+    } else {
+        if (!confirm(`¿Quieres borrar la categoría "${name}"?`)) return;
     }
+    destroy(route('product-categories.destroy', id));
+};
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -96,7 +99,7 @@ export default function Index() {
                                         </Link>
                                         <Button 
                                             disabled={processing} 
-                                            onClick={() => handleDelete(category.id, category.name)} 
+                                            onClick={() => handleDelete(category.id, category.name, category.products_count ?? 0)}
                                             className="bg-red-500 hover:bg-red-800"
                                         >
                                             Delete

@@ -12,9 +12,9 @@ class ProductCategoryController extends Controller
     public function index()
     {
         $categories = ProductCategory::withCount('products')
-                                     ->orderBy('name')
-                                     ->get();
-        
+            ->orderBy('name')
+            ->get();
+
         return Inertia::render('ProductCategories/Index', compact('categories'));
     }
 
@@ -68,12 +68,10 @@ class ProductCategoryController extends Controller
 
     public function destroy(ProductCategory $productCategory)
     {
-        if ($productCategory->products()->count() > 0) {
-            return back()->withErrors(['error' => 'Cannot delete category with products.']);
-        }
-
+        // Borra primero los productos asociados y luego la categoría
+        $productCategory->products()->delete();
         $productCategory->delete();
 
-        return redirect()->route('product-categories.index')->with('message', 'Category deleted successfully.');
+        return redirect()->route('product-categories.index')->with('message', 'Category and its products deleted successfully.');
     }
 }

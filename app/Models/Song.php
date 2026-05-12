@@ -13,17 +13,12 @@ class Song extends Model
         'artist_id',
     ];
 
-    /**
-     * Una canción pertenece a un artista
-     */
+    // Un artista por canción (belongsTo)
     public function artist()
     {
-        return $this->belongsToMany(Artist::class, 'artist_song');
+        return $this->belongsTo(Artist::class);
     }
 
-    /**
-     * Una canción tiene muchos géneros (M:M)
-     */
     public function genres()
     {
         return $this->belongsToMany(Genre::class, 'genre_song')

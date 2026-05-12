@@ -25,6 +25,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->text('description')->nullable();
             $table->foreignId('product_category_id')->constrained('product_categories')->onDelete('restrict');
+            $table->foreignId('artist_id')->nullable()->constrained()->onDelete('cascade'); // 👈 añade esto
             $table->timestamps();
         });
 

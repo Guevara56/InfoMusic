@@ -56,6 +56,7 @@ export default function Index() {
             <div className="m-4">
                 <Link href={route('users.create')}><Button>Create a User</Button></Link>
             </div>
+            
             <div className="m-4">
                 <div>
                     {flash.message && (
