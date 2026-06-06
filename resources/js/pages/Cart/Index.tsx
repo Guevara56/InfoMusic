@@ -1,190 +1,189 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
-import { Head, Link, useForm, usePage, router } from '@inertiajs/react';
-import { route } from 'ziggy-js';
-import { CircleCheckBig, Trash2, ShoppingBag, Plus, Minus, ShoppingCart } from 'lucide-react';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Cart', href: '/cart' },
-];
+import PublicLayout from '@/layouts/public-layout';
+import { Head, router, usePage } from '@inertiajs/react';
+import { useState } from 'react';
+import { ShoppingBag, Trash2, Plus, Minus, ShoppingCart, ArrowRight, Sparkles } from 'lucide-react';
 
 interface CartItem {
-    id: number;
-    name: string;
-    price: number;
-    quantity: number;
-    subtotal: number;
-    category: string | null;
-    artist: string | null;
+    id: number; name: string; price: number; quantity: number; subtotal: number;
+    image: string | null; category: string | null;
+    artist: { id: number; name: string } | null;
+}
+
+interface Recommendation {
+    id: number; name: string; price: number; image: string | null;
+    category: string | null; artist: string | null;
 }
 
 interface PageProps {
+    items: CartItem[]; total: number;
+    recommendations: Recommendation[];
     flash: { message?: string };
-    items: CartItem[];
-    total: number;
 }
 
+const pImg = (v: string | null) => !v ? '/images/default-product.svg' : v.startsWith('http') ? v : `/storage/${v}`;
+
 export default function Index() {
-    const { items, total, flash } = usePage().props as PageProps;
-    const { processing, delete: destroy } = useForm();
+    const { items, total, recommendations, flash } = usePage().props as unknown as PageProps;
+    const [loading, setLoading] = useState<number | null>(null);
+
+    const handleQuantity = (productId: number, quantity: number) => {
+        setLoading(productId);
+        router.patch(`/cart/${productId}`, { quantity }, { preserveScroll: true, onFinish: () => setLoading(null) });
+    };
 
     const handleRemove = (productId: number, name: string) => {
         if (confirm(`¿Eliminar "${name}" del carrito?`)) {
-            destroy(route('cart.remove', productId));
+            router.delete(`/cart/${productId}/remove`, { preserveScroll: true });
         }
     };
 
     const handleClear = () => {
-        if (confirm('¿Vaciar todo el carrito?')) {
-            destroy(route('cart.clear'));
-        }
+        if (confirm('¿Vaciar todo el carrito?')) router.delete('/cart/clear');
     };
 
-    const handleQuantity = (productId: number, quantity: number) => {
-        router.patch(route('cart.update', productId), { quantity }, { preserveScroll: true });
+    const handleAddRecommendation = (productId: number) => {
+        router.post('/cart/add', { product_id: productId, quantity: 1 }, { preserveScroll: true });
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="My Cart" />
+        <PublicLayout>
+            <Head title="Mi Carrito — InfoMusic" />
 
-            <div className="m-4 flex items-center justify-between">
-                <h1 className="text-2xl font-bold flex items-center gap-2">
-                    <ShoppingCart className="h-6 w-6" />
-                    My Cart
-                </h1>
-                {items.length > 0 && (
-                    <Button
-                        variant="outline"
-                        className="text-red-500 border-red-300 hover:bg-red-50"
-                        disabled={processing}
-                        onClick={handleClear}
-                    >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Clear Cart
-                    </Button>
-                )}
-            </div>
-
-            {flash.message && (
-                <div className="m-4">
-                    <Alert>
-                        <CircleCheckBig className="text-green-500" />
-                        <AlertTitle>Done!</AlertTitle>
-                        <AlertDescription>{flash.message}</AlertDescription>
-                    </Alert>
+            {flash?.message && (
+                <div style={{ marginBottom: '1.5rem', padding: '12px 16px', background: 'rgba(200,240,80,0.1)', border: '1px solid rgba(200,240,80,0.3)', borderRadius: 8, color: '#c8f050', fontSize: 13 }}>
+                    {flash.message}
                 </div>
             )}
 
             {items.length === 0 ? (
-                /* ── CARRITO VACÍO ── */
-                <div className="m-4 flex flex-col items-center justify-center py-20 text-center text-muted-foreground">
-                    <ShoppingBag className="h-16 w-16 mb-4 opacity-20" />
-                    <p className="text-lg font-medium mb-2">Your cart is empty</p>
-                    <p className="text-sm mb-6">Browse the shop and add some products!</p>
-                    <Link href={route('products.index')}>
-                        <Button>Go to Shop</Button>
-                    </Link>
+                <div style={{ textAlign: 'center', padding: '6rem 2rem', color: '#555' }}>
+                    <ShoppingBag size={64} style={{ margin: '0 auto 1.5rem', opacity: 0.2 }} />
+                    <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.8rem', marginBottom: '0.8rem', color: '#888' }}>Tu carrito está vacío</h2>
+                    <p style={{ fontSize: 14, marginBottom: '2rem' }}>Explora la tienda y añade productos de tus artistas favoritos.</p>
+                    <a href="/explore/shop" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', background: '#c8f050', color: '#0a0a0f', borderRadius: 10, textDecoration: 'none', fontWeight: 700, fontSize: 14 }}>
+                        <ShoppingBag size={16} /> Ir a la tienda
+                    </a>
                 </div>
             ) : (
-                /* ── ITEMS + RESUMEN ── */
-                <div className="m-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '2.5rem', alignItems: 'start' }}>
 
-                    {/* Lista de productos */}
-                    <div className="lg:col-span-2 space-y-3">
-                        {items.map((item) => (
-                            <div key={item.id} className="flex items-center gap-4 p-4 border rounded-lg bg-card">
-                                {/* Icono producto */}
-                                <div className="h-14 w-14 rounded-md bg-muted flex items-center justify-center flex-shrink-0">
-                                    <ShoppingBag className="h-6 w-6 text-muted-foreground" />
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+                            <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: '2rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: 12 }}>
+                                <ShoppingCart size={24} color="#c8f050" />
+                                Mi carrito
+                                <span style={{ fontSize: '1rem', color: '#555', fontFamily: 'DM Sans, sans-serif', fontWeight: 400 }}>
+                                    ({items.length} {items.length === 1 ? 'producto' : 'productos'})
+                                </span>
+                            </h1>
+                            <button onClick={handleClear} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', border: '1px solid #3a2a2a', borderRadius: 8, background: 'transparent', color: '#c04040', cursor: 'pointer', fontSize: 13 }}>
+                                <Trash2 size={13} /> Vaciar carrito
+                            </button>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                            {items.map(item => (
+                                <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '1rem 1.3rem', background: '#13131f', border: '1px solid #1e1e2e', borderRadius: 12 }}>
+                                    {/* Imagen producto */}
+                                    <div style={{ width: 60, height: 60, borderRadius: 10, overflow: 'hidden', flexShrink: 0 }}>
+                                        <img src={pImg(item.image)} alt={item.name}
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                            onError={e => { (e.target as HTMLImageElement).src = '/images/default-product.svg'; }} />
+                                    </div>
+
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div style={{ fontWeight: 600, fontSize: '0.95rem', marginBottom: 3 }}>{item.name}</div>
+                                        <div style={{ fontSize: 12, color: '#666' }}>
+                                            {item.artist && (
+                                                <a href={`/explore/artists/${item.artist.id}`} style={{ color: '#c8f050', textDecoration: 'none' }}>{item.artist.name}</a>
+                                            )}
+                                            {item.category && <span style={{ color: '#555' }}> · {item.category}</span>}
+                                        </div>
+                                        <div style={{ fontSize: 13, fontWeight: 600, color: '#e8e8f0', marginTop: 4 }}>{Number(item.price).toFixed(2)} €</div>
+                                    </div>
+
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                                        <button disabled={item.quantity <= 1 || loading === item.id} onClick={() => handleQuantity(item.id, item.quantity - 1)}
+                                            style={{ width: 30, height: 30, borderRadius: 6, border: '1px solid #2a2a3a', background: 'transparent', color: '#888', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: item.quantity <= 1 ? 0.3 : 1 }}>
+                                            <Minus size={12} />
+                                        </button>
+                                        <span style={{ width: 24, textAlign: 'center', fontSize: 14, fontWeight: 600 }}>{item.quantity}</span>
+                                        <button disabled={item.quantity >= 99 || loading === item.id} onClick={() => handleQuantity(item.id, item.quantity + 1)}
+                                            style={{ width: 30, height: 30, borderRadius: 6, border: '1px solid #2a2a3a', background: 'transparent', color: '#888', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <Plus size={12} />
+                                        </button>
+                                    </div>
+
+                                    <div style={{ width: 80, textAlign: 'right', flexShrink: 0 }}>
+                                        <div style={{ fontWeight: 700, fontSize: '1rem' }}>{Number(item.subtotal).toFixed(2)} €</div>
+                                    </div>
+
+                                    <button onClick={() => handleRemove(item.id, item.name)}
+                                        style={{ width: 32, height: 32, borderRadius: 6, border: 'none', background: 'transparent', color: '#555', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+                                        onMouseEnter={e => (e.currentTarget.style.color = '#ef4444')}
+                                        onMouseLeave={e => (e.currentTarget.style.color = '#555')}>
+                                        <Trash2 size={15} />
+                                    </button>
                                 </div>
+                            ))}
+                        </div>
 
-                                {/* Info */}
-                                <div className="flex-1 min-w-0">
-                                    <p className="font-semibold truncate">{item.name}</p>
-                                    <p className="text-sm text-muted-foreground">
-                                        {item.artist && <span>{item.artist} · </span>}
-                                        {item.category}
-                                    </p>
-                                    <p className="text-sm font-medium mt-1">{Number(item.price).toFixed(2)} €</p>
+                        {/* RECOMENDACIONES */}
+                        {recommendations.length > 0 && (
+                            <div style={{ marginTop: '3rem' }}>
+                                <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.3rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: 8 }}>
+                                    <Sparkles size={18} color="#c8f050" /> También te puede gustar
+                                </h2>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: 10 }}>
+                                    {recommendations.map(rec => (
+                                        <div key={rec.id} style={{ background: '#13131f', border: '1px solid #1e1e2e', borderRadius: 10, overflow: 'hidden' }}>
+                                            <div style={{ height: 110, overflow: 'hidden' }}>
+                                                <img src={pImg(rec.image)} alt={rec.name}
+                                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                    onError={e => { (e.target as HTMLImageElement).src = '/images/default-product.svg'; }} />
+                                            </div>
+                                            <div style={{ padding: '0.7rem' }}>
+                                                <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{rec.name}</div>
+                                                <div style={{ fontSize: 11, color: '#666', marginBottom: 6 }}>{rec.artist}</div>
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                    <span style={{ fontSize: 13, fontWeight: 700, color: '#c8f050' }}>{Number(rec.price).toFixed(2)} €</span>
+                                                    <button onClick={() => handleAddRecommendation(rec.id)}
+                                                        style={{ padding: '4px 8px', background: 'rgba(200,240,80,0.1)', border: '1px solid rgba(200,240,80,0.2)', borderRadius: 5, color: '#c8f050', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
+                                                        + Añadir
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-
-                                {/* Cantidad */}
-                                <div className="flex items-center gap-2 flex-shrink-0">
-                                    <Button
-                                        size="icon"
-                                        variant="outline"
-                                        className="h-7 w-7"
-                                        disabled={item.quantity <= 1 || processing}
-                                        onClick={() => handleQuantity(item.id, item.quantity - 1)}
-                                    >
-                                        <Minus className="h-3 w-3" />
-                                    </Button>
-                                    <span className="w-6 text-center text-sm font-medium">{item.quantity}</span>
-                                    <Button
-                                        size="icon"
-                                        variant="outline"
-                                        className="h-7 w-7"
-                                        disabled={item.quantity >= 99 || processing}
-                                        onClick={() => handleQuantity(item.id, item.quantity + 1)}
-                                    >
-                                        <Plus className="h-3 w-3" />
-                                    </Button>
-                                </div>
-
-                                {/* Subtotal */}
-                                <div className="text-right flex-shrink-0 w-20">
-                                    <p className="font-bold">{Number(item.subtotal).toFixed(2)} €</p>
-                                </div>
-
-                                {/* Eliminar */}
-                                <Button
-                                    size="icon"
-                                    variant="ghost"
-                                    className="text-red-500 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
-                                    disabled={processing}
-                                    onClick={() => handleRemove(item.id, item.name)}
-                                >
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
                             </div>
-                        ))}
+                        )}
                     </div>
 
-                    {/* Resumen del pedido */}
-                    <div className="lg:col-span-1">
-                        <div className="border rounded-lg p-5 bg-card space-y-4 sticky top-4">
-                            <h2 className="text-lg font-bold">Order Summary</h2>
-
-                            <div className="space-y-2 text-sm">
-                                {items.map((item) => (
-                                    <div key={item.id} className="flex justify-between text-muted-foreground">
-                                        <span className="truncate mr-2">{item.name} × {item.quantity}</span>
-                                        <span className="flex-shrink-0">{Number(item.subtotal).toFixed(2)} €</span>
+                    {/* RESUMEN */}
+                    <div style={{ position: 'sticky', top: 80 }}>
+                        <div style={{ background: '#13131f', border: '1px solid #1e1e2e', borderRadius: 14, padding: '1.5rem' }}>
+                            <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.2rem', fontWeight: 700, marginBottom: '1.2rem' }}>Resumen del pedido</h2>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: '1.2rem' }}>
+                                {items.map(item => (
+                                    <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#777' }}>
+                                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginRight: 8 }}>{item.name} × {item.quantity}</span>
+                                        <span style={{ flexShrink: 0 }}>{Number(item.subtotal).toFixed(2)} €</span>
                                     </div>
                                 ))}
                             </div>
-
-                            <div className="border-t pt-3 flex justify-between font-bold text-base">
-                                <span>Total</span>
-                                <span>{Number(total).toFixed(2)} €</span>
+                            <div style={{ borderTop: '1px solid #1e1e2e', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                <span style={{ fontWeight: 700, fontSize: '1rem' }}>Total</span>
+                                <span style={{ fontWeight: 900, fontSize: '1.4rem', color: '#c8f050', fontFamily: 'Playfair Display, serif' }}>{Number(total).toFixed(2)} €</span>
                             </div>
-
-                            {/* Botón Stripe — deshabilitado por ahora */}
-                            <Button className="w-full" size="lg" disabled>
-                                Checkout (Coming soon)
-                            </Button>
-
-                            <p className="text-xs text-muted-foreground text-center">
-                                Payment powered by Stripe — coming soon
-                            </p>
+                            <a href="/checkout" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: '14px', background: '#c8f050', color: '#0a0a0f', borderRadius: 10, textDecoration: 'none', fontWeight: 700, fontSize: 15 }}>
+                                Continuar con el pago <ArrowRight size={16} />
+                            </a>
+                            <p style={{ fontSize: 11, color: '#444', textAlign: 'center', marginTop: '0.8rem' }}>Pago seguro con Stripe</p>
                         </div>
                     </div>
-
                 </div>
             )}
-        </AppLayout>
+        </PublicLayout>
     );
 }

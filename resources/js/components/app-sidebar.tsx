@@ -10,7 +10,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+import { dashboard, home } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import {LayoutGrid, Boxes, Music, Disc3, UserPlus  , MicVocal, User, SquareActivity} from 'lucide-react';
@@ -19,37 +19,37 @@ import AppLogo from './app-logo';
 const mainNavItems: NavItem[] = [
 
     {
-        title: 'Users',
+        title: 'Usuarios',
         href: '/users',
         icon: User,
     },
     {
-        title: 'Products',
+        title: 'Productos',
         href: '/products',
         icon: Boxes ,
     },
     {
-        title: 'Artists',
+        title: 'Artistas',
         href: '/artists',
         icon: MicVocal ,
     },
     {
-        title: 'Labels',
+        title: 'Discográficas',
         href: '/labels',
         icon: Disc3,
     },
     {
-        title: 'Songs',
+        title: 'Canciones',
         href: '/songs',
         icon: Music,
     },
     {
-        title: 'Genres',
+        title: 'Generos',
         href: '/genres',
         icon: SquareActivity ,
     },
     {
-        title: 'Social Medias',
+        title: 'Redes Sociales',
         href: '/social-medias',
         icon: UserPlus,
     },
@@ -69,7 +69,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
+                            <Link href={home()} prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

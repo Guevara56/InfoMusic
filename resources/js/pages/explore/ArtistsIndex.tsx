@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Search, MapPin, Music2 } from 'lucide-react';
 
 interface Label  { id: number; name: string; }
-interface Artist { id: number; name: string; country: string; bio: string; formed_year: string; label?: Label; }
+interface Artist { id: number; name: string; country: string; bio: string; formed_year: string; avatar: string | null; label?: Label; }
 
 interface Paginated<T> {
     data: T[]; current_page: number; last_page: number; total: number;
@@ -12,6 +12,16 @@ interface Paginated<T> {
 }
 
 interface Props { artists: Paginated<Artist>; search: string; }
+
+function ArtistAvatar({ avatar, name }: { avatar: string | null; name: string }) {
+    const src = avatar?.startsWith('http') ? avatar : avatar ? `/storage/${avatar}` : '/images/default-artist.svg';
+    return (
+        <div style={{ width: 56, height: 56, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: 'linear-gradient(135deg, #1e1e3a, #2a2a5a)' }}>
+            <img src={src} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                onError={e => { (e.target as HTMLImageElement).src = '/images/default-artist.svg'; }} />
+        </div>
+    );
+}
 
 export default function ArtistsIndex({ artists, search: initialSearch }: Props) {
     const [search, setSearch] = useState(initialSearch ?? '');
@@ -30,23 +40,17 @@ export default function ArtistsIndex({ artists, search: initialSearch }: Props) 
                 <p style={{ color: '#666', fontSize: '0.95rem' }}>{artists.total} artistas en la base de datos</p>
             </div>
 
-            {/* Search */}
             <div style={{ position: 'relative', maxWidth: 400, marginBottom: '2rem' }}>
                 <Search size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#555' }} />
-                <input
-                    value={search}
-                    onChange={e => handleSearch(e.target.value)}
-                    placeholder="Buscar artista..."
-                    style={{ width: '100%', padding: '10px 14px 10px 40px', background: '#13131f', border: '1px solid #2a2a3a', borderRadius: 10, color: '#e8e8f0', fontSize: 14, outline: 'none' }}
-                />
+                <input value={search} onChange={e => handleSearch(e.target.value)} placeholder="Buscar artista..."
+                    style={{ width: '100%', padding: '10px 14px 10px 40px', background: '#13131f', border: '1px solid #2a2a3a', borderRadius: 10, color: '#e8e8f0', fontSize: 14, outline: 'none' }} />
             </div>
 
-            {/* Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 14 }}>
                 {artists.data.map((artist) => (
                     <a key={artist.id} href={`/explore/artists/${artist.id}`} className="card" style={{ padding: '1.4rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: '0.8rem' }}>
-                            <div className="avatar-circle">{artist.name.charAt(0)}</div>
+                            <ArtistAvatar avatar={artist.avatar} name={artist.name} />
                             <div>
                                 <div style={{ fontWeight: 700, fontSize: '1rem' }}>{artist.name}</div>
                                 {artist.formed_year && <div style={{ fontSize: 12, color: '#555', marginTop: 2 }}>Desde {artist.formed_year}</div>}
@@ -79,7 +83,6 @@ export default function ArtistsIndex({ artists, search: initialSearch }: Props) 
                 </div>
             )}
 
-            {/* Pagination */}
             {artists.last_page > 1 && (
                 <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginTop: '2.5rem', flexWrap: 'wrap' }}>
                     {artists.links.map((link, i) => (

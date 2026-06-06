@@ -11,10 +11,10 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::check() || !Auth::user()->isAdmin()) {
-            abort(403, 'Acceso denegado.');
-        }
+      if (!Auth::check() || !(Auth::user() instanceof \App\Models\User && Auth::user()->isAdmin())) {
+    abort(403, 'Acceso denegado.');
+}
 
         return $next($request);
     }
-}
+}   

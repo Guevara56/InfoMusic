@@ -5,8 +5,10 @@ import { Search } from 'lucide-react';
 
 interface Genre  { id: number; name: string; }
 interface Artist { id: number; name: string; }
-interface Song   { id: number; title: string; duration: string; release_year: string; artist: Artist; genres: Genre[]; }
+interface Song   { id: number; title: string; duration: string; release_year: string; image: string | null; artist: Artist; genres: Genre[]; }
 interface Paginated<T> { data: T[]; current_page: number; last_page: number; total: number; links: { url: string | null; label: string; active: boolean }[]; }
+
+const sImg = (v: string | null) => !v ? '/images/default-song.svg' : v.startsWith('http') ? v : `/storage/${v}`;
 
 export default function SongsIndex({ songs, search: init }: { songs: Paginated<Song>; search: string }) {
     const [search, setSearch] = useState(init ?? '');
@@ -36,15 +38,19 @@ export default function SongsIndex({ songs, search: init }: { songs: Paginated<S
                 )}
                 {songs.data.map((song, i) => (
                     <a key={song.id} href={`/explore/songs/${song.id}`} style={{
-                        display: 'grid', gridTemplateColumns: '36px 1fr 120px auto',
-                        alignItems: 'center', gap: 16, padding: '0.9rem 1.4rem',
+                        display: 'grid', gridTemplateColumns: '48px 1fr 120px auto',
+                        alignItems: 'center', gap: 14, padding: '0.8rem 1.2rem',
                         borderBottom: i < songs.data.length - 1 ? '1px solid #1a1a2a' : 'none',
                         textDecoration: 'none', color: 'inherit', transition: 'background 0.15s',
                     }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.03)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                     >
-                        <span style={{ color: '#444', fontSize: 13, textAlign: 'right' }}>{(songs.current_page - 1) * 50 + i + 1}</span>
+                        <div style={{ width: 40, height: 40, borderRadius: 6, overflow: 'hidden', flexShrink: 0 }}>
+                            <img src={sImg(song.image)} alt={song.title}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                onError={e => { (e.target as HTMLImageElement).src = '/images/default-song.svg'; }} />
+                        </div>
                         <div>
                             <div style={{ fontWeight: 500, fontSize: '0.9rem' }}>{song.title}</div>
                             <div style={{ fontSize: 12, color: '#666', marginTop: 2 }}>
@@ -62,9 +68,9 @@ export default function SongsIndex({ songs, search: init }: { songs: Paginated<S
             {songs.last_page > 1 && (
                 <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginTop: '2rem', flexWrap: 'wrap' }}>
                     {songs.links.map((link, i) => (
-                        link.url ? (
-                            <a key={i} href={link.url} style={{ padding: '7px 14px', borderRadius: 8, fontSize: 13, textDecoration: 'none', background: link.active ? '#c8f050' : '#13131f', color: link.active ? '#0a0a0f' : '#888', border: '1px solid ' + (link.active ? '#c8f050' : '#2a2a3a'), fontWeight: link.active ? 700 : 400 }} dangerouslySetInnerHTML={{ __html: link.label }} />
-                        ) : <span key={i} style={{ padding: '7px 14px', color: '#333', fontSize: 13 }} dangerouslySetInnerHTML={{ __html: link.label }} />
+                        link.url
+                            ? <a key={i} href={link.url} style={{ padding: '7px 14px', borderRadius: 8, fontSize: 13, textDecoration: 'none', background: link.active ? '#c8f050' : '#13131f', color: link.active ? '#0a0a0f' : '#888', border: '1px solid ' + (link.active ? '#c8f050' : '#2a2a3a'), fontWeight: link.active ? 700 : 400 }} dangerouslySetInnerHTML={{ __html: link.label }} />
+                            : <span key={i} style={{ padding: '7px 14px', color: '#333', fontSize: 13 }} dangerouslySetInnerHTML={{ __html: link.label }} />
                     ))}
                 </div>
             )}

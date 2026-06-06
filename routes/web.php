@@ -9,13 +9,19 @@ use App\Http\Controllers\LabelController;
 use App\Http\Controllers\SocialMediaController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PublicController;
+use App\Http\Controllers\AccountController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
 // ── RUTAS PÚBLICAS ────────────────────────────────────────────
 Route::get('/', [PublicController::class, 'home'])->name('home');
+
+Route::get('/email-verified', function () {
+    return Inertia::render('email-verified');
+})->name('email.verified.success');
 
 Route::prefix('explore')->name('explore.')->group(function () {
     Route::get('/artists',          [PublicController::class, 'artists'])->name('artists');
@@ -29,6 +35,9 @@ Route::prefix('explore')->name('explore.')->group(function () {
     Route::get('/shop',             [PublicController::class, 'shop'])->name('shop');
     Route::get('/shop/{product}',   [PublicController::class, 'product'])->name('product');
 });
+
+
+
 
 // ── DASHBOARD (solo admin) ────────────────────────────────────
 Route::middleware(['auth', 'verified', 'admin'])->group(function () {
@@ -49,12 +58,25 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 // ── CARRITO (cualquier usuario autenticado) ───────────────────
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('cart')->name('cart.')->group(function () {
-        Route::get('/',                    [CartController::class, 'index'])->name('index');
-        Route::post('/add',                [CartController::class, 'add'])->name('add');
-        Route::patch('/{product}',         [CartController::class, 'update'])->name('update');
-        Route::delete('/{product}/remove', [CartController::class, 'remove'])->name('remove');
-        Route::delete('/clear',            [CartController::class, 'clear'])->name('clear');
+        Route::get('/',                    [\App\Http\Controllers\CartController::class, 'index'])->name('index');
+        Route::post('/add',                [\App\Http\Controllers\CartController::class, 'add'])->name('add');
+        Route::patch('/{product}',         [\App\Http\Controllers\CartController::class, 'update'])->name('update');
+        Route::delete('/{product}/remove', [\App\Http\Controllers\CartController::class, 'remove'])->name('remove');
+        Route::delete('/clear',            [\App\Http\Controllers\CartController::class, 'clear'])->name('clear');
     });
+
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/checkout/confirmation', [CheckoutController::class, 'confirmation'])->name('checkout.confirmation');
 });
 
-require __DIR__.'/settings.php';
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/account', [AccountController::class, 'index'])
+        ->name('account');
+    Route::get('/account/orders/{order}', [AccountController::class, 'show'])
+        ->name('account.orders.show');
+});
+
+require __DIR__ . '/settings.php';

@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import ImageInput from '@/components/ImageInput';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/react';
@@ -12,60 +13,50 @@ import countries from 'world-countries';
 import Select from 'react-select';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Create Artist',
-        href: '/artists/create',
-    },
+    { title: 'Create Artist', href: '/artists/create' },
 ];
 
-interface LabelType {
-    id: number;
-    name: string;
-}
-
-interface GenreType {
-    id: number;
-    name: string;
-}
-
-interface Props {
-    labels: LabelType[];
-    genres: GenreType[];
-}
+interface LabelType { id: number; name: string; }
+interface GenreType  { id: number; name: string; }
+interface Props { labels: LabelType[]; genres: GenreType[]; }
 
 export default function Create() {
-    // ✅ CORRECCIÓN 1: Desestructurar labels Y genres
     const { labels, genres } = usePage().props as Props;
 
-    // ✅ CORRECCIÓN 2: genre_ids debe ser ARRAY, no string
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors } = useForm<{
+        name: string;
+        bio: string;
+        country: string;
+        formed_year: string;
+        avatar: File | null;
+        label_id: string;
+        genre_ids: string[];
+    }>({
         name: '',
         bio: '',
         country: '',
         formed_year: '',
-        avatar: '',
+        avatar: null,
         label_id: '',
-        genre_ids: [] as string[],  // ← Array de strings
+        genre_ids: [],
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('artists.store'));
-    }
+        post(route('artists.store'), {
+            forceFormData: true, // necesario para enviar ficheros
+        });
+    };
 
-    // Preparar opciones para react-select
     const countryOptions = countries
-        .map(country => ({
-            value: country.name.common,
-            label: `${country.flag} ${country.name.common}`,
-        }))
+        .map(c => ({ value: c.name.common, label: `${c.flag} ${c.name.common}` }))
         .sort((a, b) => a.label.localeCompare(b.label));
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create a New Artist" />
             <div className="w-8/12 p-4">
-                <div className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
                     {Object.keys(errors).length > 0 && (
                         <Alert>
                             <CircleAlert />
@@ -80,117 +71,65 @@ export default function Create() {
                         </Alert>
                     )}
 
-                    <div className='space-y-1.5'>
-                        <Label htmlFor="name">Name</Label>
-                        <Input
-                            placeholder="Artist Name"
-                            value={data.name}
-                            onChange={(e) => setData('name', e.target.value)}
-                        />
+                    <div className="space-y-1.5">
+                        <Label>Name</Label>
+                        <Input placeholder="Artist Name" value={data.name} onChange={e => setData('name', e.target.value)} />
                     </div>
 
-                    <div className='space-y-1.5'>
-                        <Label htmlFor="bio">Bio</Label>
-                        <Textarea
-                            placeholder="Biography"
-                            value={data.bio}
-                            onChange={(e) => setData('bio', e.target.value)}
-                        />
+                    <div className="space-y-1.5">
+                        <Label>Bio</Label>
+                        <Textarea placeholder="Biography" value={data.bio} onChange={e => setData('bio', e.target.value)} />
                     </div>
 
-                    {/* REACT-SELECT PARA PAÍSES */}
-                    <div className='space-y-1.5'>
-                        <Label htmlFor="country">Country</Label>
+                    <div className="space-y-1.5">
+                        <Label>Country</Label>
                         <Select
-                            value={countryOptions.find(opt => opt.value === data.country) || null}
-                            onChange={(option) => setData('country', option?.value || '')}
+                            value={countryOptions.find(o => o.value === data.country) || null}
+                            onChange={o => setData('country', o?.value || '')}
                             options={countryOptions}
                             placeholder="Select a country"
-                            isSearchable
-                            isClearable
+                            isSearchable isClearable
                             styles={{
-                                control: (base) => ({
-                                    ...base,
-                                    borderColor: '#d1d5db',
-                                    borderRadius: '0.375rem',
-                                    padding: '0.125rem',
-                                    minHeight: '42px',
-                                }),
-                                menu: (base) => ({
-                                    ...base,
-                                    zIndex: 50,
-                                }),
+                                control: base => ({ ...base, borderColor: '#d1d5db', borderRadius: '0.375rem', padding: '0.125rem', minHeight: '42px' }),
+                                menu: base => ({ ...base, zIndex: 50 }),
                             }}
                         />
-                        {errors.country && (
-                            <p className="text-red-500 text-sm mt-1">{errors.country}</p>
-                        )}
                     </div>
 
-                    {/* ✅ CORRECCIÓN 3: Agregar tipado al genre en map */}
-                    <div className='space-y-1.5'>
-                        <Label htmlFor="genres">Genres</Label>
-                        <select
-                            multiple
-                            value={data.genre_ids}
-                            onChange={(e) => {
-                                const selected = Array.from(e.target.selectedOptions, opt => opt.value);
-                                setData('genre_ids', selected);
-                            }}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            size={5}
-                        >
-                            {genres.map((genre: GenreType) => (
-                                <option key={genre.id} value={genre.id}>
-                                    {genre.name}
-                                </option>
-                            ))}
+                    <div className="space-y-1.5">
+                        <Label>Genres</Label>
+                        <select multiple value={data.genre_ids}
+                            onChange={e => setData('genre_ids', Array.from(e.target.selectedOptions, o => o.value))}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900" size={5}>
+                            {genres.map((g: GenreType) => <option key={g.id} value={g.id}>{g.name}</option>)}
                         </select>
                         <p className="text-xs text-gray-500">Hold Ctrl/Cmd to select multiple</p>
                     </div>
 
-                    <div className='space-y-1.5'>
-                        <Label htmlFor="formed_year">Formed Year</Label>
-                        <Input
-                            placeholder="1960"
-                            value={data.formed_year}
-                            onChange={(e) => setData('formed_year', e.target.value)}
-                        />
+                    <div className="space-y-1.5">
+                        <Label>Formed Year</Label>
+                        <Input placeholder="1990" value={data.formed_year} onChange={e => setData('formed_year', e.target.value)} />
                     </div>
 
-                    <div className='space-y-1.5'>
-                        <Label htmlFor="avatar">Avatar URL</Label>
-                        <Input
-                            placeholder="https://..."
-                            value={data.avatar}
-                            onChange={(e) => setData('avatar', e.target.value)}
-                        />
-                    </div>
+                    {/* IMAGEN — reemplaza el campo Avatar URL */}
+                    <ImageInput
+                        label="Foto del artista"
+                        onChange={file => setData('avatar', file)}
+                    />
 
-                    <div className='space-y-1.5'>
-                        <Label htmlFor="label">Label (Optional)</Label>
-                        <select
-                            value={data.label_id}
-                            onChange={(e) => setData('label_id', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        >
+                    <div className="space-y-1.5">
+                        <Label>Label (Optional)</Label>
+                        <select value={data.label_id} onChange={e => setData('label_id', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900">
                             <option value="">Independent</option>
-                            {labels.map(label => (
-                                <option key={label.id} value={label.id}>
-                                    {label.name}
-                                </option>
-                            ))}
+                            {labels.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
                         </select>
                     </div>
 
-                    <Button
-                        disabled={processing}
-                        onClick={handleSubmit}
-                        className="mt-4"
-                    >
+                    <Button type="submit" disabled={processing} className="mt-4">
                         {processing ? 'Creating...' : 'Add Artist'}
                     </Button>
-                </div>
+                </form>
             </div>
         </AppLayout>
     );

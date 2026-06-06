@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Laravel\Fortify\Contracts\VerifyEmailResponse;
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -27,11 +28,25 @@ class FortifyServiceProvider extends ServiceProvider
      * Bootstrap any application services.
      */
     public function boot(): void
-    {
-        $this->configureActions();
-        $this->configureViews();
-        $this->configureRateLimiting();
-    }
+{
+    $this->configureActions();
+    $this->configureViews();
+    $this->configureRateLimiting();
+
+    // Login redirect
+
+    // Email verified redirect
+    $this->app->singleton(
+        VerifyEmailResponse::class,
+        fn () => new class implements VerifyEmailResponse {
+
+            public function toResponse($request)
+            {
+                return redirect('/email-verified');
+            }
+        }
+    );
+}
 
     /**
      * Configure Fortify actions.

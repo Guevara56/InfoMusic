@@ -2,75 +2,84 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
 use App\Models\Artist;
 use App\Models\Label;
-use App\Models\Genre;
+use App\Traits\HandlesImageUpload;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+
 
 class ArtistController extends Controller
 {
+    use HandlesImageUpload;
+
     public function index()
     {
-        $artists = Artist::with('label')->orderBy('created_at', 'desc')->get();
+        $artists = Artist::with('label')->orderBy('name')->get();
         return Inertia::render('Artists/Index', compact('artists'));
     }
 
     public function create()
     {
-        $labels = Label::all();
-        $genres = Genre::orderBy('name')->get();
-        return Inertia::render('Artists/Create', compact('labels', 'genres'));
+        $labels = Label::orderBy('name')->get();
+        return Inertia::render('Artists/Create', compact('labels'));
     }
 
-    public function store(Request $request, Artist $artist)
+    public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'bio' => 'nullable|string',
-            'avatar' => 'nullable|string',
-            'country' => 'nullable|string|max:255',
-            'formed_year' => 'nullable|string|max:4',
-            'label_id' => 'nullable|exists:labels,id',
-            'genre_ids' => 'nullable|array',  // NUEVO
-            'genre_ids.*' => 'exists:genres,id',  // Validar cada ID
+            'name'         => 'required|string|max:255',
+            'bio'          => 'nullable|string',
+            'country'      => 'nullable|string|max:100',
+            'formed_year'  => 'nullable|string|max:4',
+            'label_id'     => 'nullable|exists:labels,id',
+            'avatar'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        $artist = Artist::create($request->except('genre_ids'));
+        $data = $request->except('avatar');
 
-        if ($request->genre_ids) {
-        $artist->genres()->attach($request->genre_ids);
+        if ($request->hasFile('avatar')) {
+            $data['avatar'] = $this->uploadImage($request->file('avatar'), 'artists');
         }
+
+        Artist::create($data);
 
         return redirect()->route('artists.index')->with('message', 'Artist created successfully.');
     }
 
     public function edit(Artist $artist)
     {
-        $labels = Label::all();
+        $labels = Label::orderBy('name')->get();
         return Inertia::render('Artists/Edit', compact('artist', 'labels'));
     }
 
     public function update(Request $request, Artist $artist)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'bio' => 'nullable|string',
-            'avatar' => 'nullable|string',
-            'country' => 'nullable|string|max:255',
-            'formed_year' => 'nullable|string|max:4',
-            'label_id' => 'nullable|exists:labels,id',
+            'name'         => 'required|string|max:255',
+            'bio'          => 'nullable|string',
+            'country'      => 'nullable|string|max:100',
+            'formed_year'  => 'nullable|string|max:4',
+            'label_id'     => 'nullable|exists:labels,id',
+            'avatar'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        $artist->update($request->all());
+        $data = $request->except('avatar');
+
+        if ($request->hasFile('avatar')) {
+            $this->deleteImage($artist->avatar);
+            $data['avatar'] = $this->uploadImage($request->file('avatar'), 'artists');
+        }
+
+        $artist->update($data);
 
         return redirect()->route('artists.index')->with('message', 'Artist updated successfully.');
     }
 
     public function destroy(Artist $artist)
     {
+        $this->deleteImage($artist->avatar);
         $artist->delete();
-
         return redirect()->route('artists.index')->with('message', 'Artist deleted successfully.');
     }
 }
