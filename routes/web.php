@@ -12,6 +12,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -41,9 +42,8 @@ Route::prefix('explore')->name('explore.')->group(function () {
 
 // ── DASHBOARD (solo admin) ────────────────────────────────────
 Route::middleware(['auth', 'verified', 'admin'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])
+    ->name('dashboard');
 
     Route::resource('products', ProductController::class);
     Route::resource('product-categories', ProductCategoryController::class);
@@ -72,11 +72,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 Route::middleware(['auth'])->group(function () {
-
-    Route::get('/account', [AccountController::class, 'index'])
-        ->name('account');
-    Route::get('/account/orders/{order}', [AccountController::class, 'show'])
-        ->name('account.orders.show');
+    Route::get('/account', [\App\Http\Controllers\AccountController::class, 'index'])->name('account.index');
+    Route::get('/account/orders/{order}', [\App\Http\Controllers\AccountController::class, 'show'])->name('account.orders.show');
+    Route::patch('/account/shipping', [\App\Http\Controllers\AccountController::class, 'updateShipping'])->name('account.shipping.update');
 });
 
 require __DIR__ . '/settings.php';

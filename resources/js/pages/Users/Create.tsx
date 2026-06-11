@@ -52,32 +52,32 @@ export default function Create() {
                     )}
 
                     <div className="gap-1.5">
-                        <Label htmlFor="name">Name</Label>
+                        <Label htmlFor="name">Nombre</Label>
                         <Input
                             id="name"
-                            placeholder="Name"
+                            placeholder="Nombre"
                             value={data.name}
                             onChange={(e) => setData('name', e.target.value)}
                         />
                     </div>
 
                     <div className="gap-1.5">
-                        <Label htmlFor="email">Email</Label>
+                        <Label htmlFor="email">Correo</Label>
                         <Input
                             id="email"
                             type="email"
-                            placeholder="Email"
+                            placeholder="Correo"
                             value={data.email}
                             onChange={(e) => setData('email', e.target.value)}
                         />
                     </div>
 
                     <div className="gap-1.5">
-                        <Label htmlFor="password">Password</Label>
+                        <Label htmlFor="password">Contraseña</Label>
                         <Input
                             id="password"
                             type="password"
-                            placeholder="Password must be at least 8 characters long)"
+                            placeholder="Mínimo 8 caracteres"
                             value={data.password}
                             onChange={(e) => setData('password', e.target.value)}
                         />
@@ -88,7 +88,7 @@ export default function Create() {
                         <Input
                             id="password_confirmation"
                             type="password"
-                            placeholder="Repeat password"
+                            placeholder="repetir contraseña"
                             value={data.password_confirmation}
                             onChange={(e) => setData('password_confirmation', e.target.value)}
                         />

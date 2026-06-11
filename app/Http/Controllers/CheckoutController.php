@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
+use App\Notifications\OrderPlacedNotification;
 
 class CheckoutController extends Controller
 {
@@ -55,7 +56,7 @@ class CheckoutController extends Controller
         return Inertia::render('Checkout/Index', [
             'items'         => $items,
             'total'         => $total,
-            'prefill'       => ['name' => $user->name, 'email' => $user->email],
+            'prefill' => ['name' => $user->name,'email' => $user->email,'phone' => $user->phone,'address' => $user->address,'city' => $user->city,'postal_code' => $user->postal_code,'country' => $user->country,],
             'clientSecret'  => $paymentIntent->client_secret,
             'stripeKey'     => config('services.stripe.key'),
         ]);
@@ -65,21 +66,22 @@ class CheckoutController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'             => 'required|string|max:255',
-            'email'            => 'required|email|max:255',
-            'phone'            => 'nullable|string|max:20',
-            'address'          => 'required|string|max:255',
-            'city'             => 'required|string|max:100',
-            'postal_code'      => 'required|string|max:10',
-            'country'          => 'required|string|max:100',
-            'payment_intent_id'=> 'required|string',
+            'name'              => 'required|string|max:255',
+            'email'             => 'required|email|max:255',
+            'phone'             => 'nullable|string|max:20',
+            'address'           => 'required|string|max:255',
+            'city'              => 'required|string|max:100',
+            'postal_code'       => 'required|string|max:10',
+            'country'           => 'required|string|max:100',
+            'payment_intent_id' => 'required|string',
         ]);
 
-        // Verificar que el PaymentIntent está pagado en Stripe
         $paymentIntent = PaymentIntent::retrieve($request->payment_intent_id);
 
         if ($paymentIntent->status !== 'succeeded') {
-            return back()->withErrors(['payment' => 'El pago no se ha completado correctamente.']);
+            return back()->withErrors([
+                'payment' => 'El pago no se ha completado correctamente.'
+            ]);
         }
 
         $cart = Cart::where('user_id', Auth::id())
@@ -88,12 +90,17 @@ class CheckoutController extends Controller
             ->first();
 
         if (!$cart || $cart->products->isEmpty()) {
-            return redirect()->route('cart.index')->with('message', 'Tu carrito está vacío.');
+            return redirect()
+                ->route('cart.index')
+                ->with('message', 'Tu carrito está vacío.');
         }
 
-        $total = $cart->products->sum(fn($p) => $p->price * $p->pivot->quantity);
+        $total = $cart->products->sum(
+            fn($p) => $p->price * $p->pivot->quantity
+        );
 
         DB::transaction(function () use ($request, $cart, $total, $paymentIntent) {
+
             $order = Order::create([
                 'user_id'               => Auth::id(),
                 'status'                => 'paid',
@@ -120,12 +127,27 @@ class CheckoutController extends Controller
                 ]);
             }
 
+            $order->load('items');
+
+            Auth::user()->notify(
+                new OrderPlacedNotification($order)
+            );
+
             $cart->products()->detach();
-            $cart->update(['status' => 'completed']);
-            Cart::create(['user_id' => Auth::id(), 'status' => 'active']);
+
+            $cart->update([
+                'status' => 'completed'
+            ]);
+
+            Cart::create([
+                'user_id' => Auth::id(),
+                'status'  => 'active',
+            ]);
         });
 
-        return redirect()->route('checkout.confirmation')->with('message', '¡Pedido realizado con éxito!');
+        return redirect()
+            ->route('checkout.confirmation')
+            ->with('message', '¡Pedido realizado con éxito!');
     }
 
     // ── CONFIRMACIÓN ──────────────────────────────────────────────

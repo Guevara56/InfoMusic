@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('name');
             $table->decimal('price', 10, 2);
             $table->text('description')->nullable();
+            $table->integer('stock')->default(0);
             $table->foreignId('product_category_id')->constrained('product_categories')->onDelete('restrict');
             $table->foreignId('artist_id')->nullable()->constrained()->onDelete('cascade'); // 👈 añade esto
             $table->timestamps();
@@ -42,7 +43,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('products');
         Schema::dropIfExists('product_categories');
+        Schema::dropIfExists('products');
     }
 };

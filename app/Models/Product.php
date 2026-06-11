@@ -8,10 +8,12 @@ class Product extends Model
 {
     protected $fillable = [
         'name',
-        'description',
         'price',
+        'stock',
+        'description',
+        'image',
+        'product_category_id',
         'artist_id',
-        'product_category_id'
     ];
 
     // Un artista por producto (belongsTo)

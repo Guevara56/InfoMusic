@@ -174,9 +174,9 @@ function CheckoutForm({ items, total, prefill, errors: serverErrors, clientSecre
                 )}
 
                 {/* Tarjeta de prueba */}
-                <div style={{ marginTop: 10, padding: '8px 12px', background: 'rgba(200,240,80,0.05)', border: '1px solid rgba(200,240,80,0.15)', borderRadius: 6, fontSize: 11, color: '#888' }}>
+                {/* <div style={{ marginTop: 10, padding: '8px 12px', background: 'rgba(200,240,80,0.05)', border: '1px solid rgba(200,240,80,0.15)', borderRadius: 6, fontSize: 11, color: '#888' }}>
                     🧪 Modo test — usa la tarjeta <span style={{ color: '#c8f050', fontFamily: 'monospace' }}>4242 4242 4242 4242</span> · cualquier fecha futura · cualquier CVC
-                </div>
+                </div> */}
             </section>
 
             {/* Error de pago */}

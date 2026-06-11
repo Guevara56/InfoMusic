@@ -17,7 +17,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('artist_social_media', function (Blueprint $table){
+        Schema::create('artist_social_media', function (Blueprint $table) {
             $table->id();
             $table->foreignId('artist_id')->constrained()->onDelete('cascade');
             $table->foreignId('social_media_id')->constrained()->onDelete('cascade');
@@ -28,6 +28,7 @@ return new class extends Migration
 
     public function down(): void
     {
+        Schema::dropIfExists('artist_social_media');
         Schema::dropIfExists('social_media');
     }
 };

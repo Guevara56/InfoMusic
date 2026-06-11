@@ -8,6 +8,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import { CircleAlert } from 'lucide-react';
+import ImageInput from '@/components/ImageInput';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -39,20 +40,22 @@ export default function Create() {
         price: '',
         stock: '',
         description: '',
-        image: '',
+        image: null as File | null,
         product_category_id: '',
         artist_id: '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('products.store'));
+        post(route('products.store'), {
+            forceFormData: true,
+        });
     }
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create a New Product" />
-            
+
             <div className="w-8/12 p-4">
                 <div className="space-y-4">
                     {Object.keys(errors).length > 0 && (
@@ -71,9 +74,9 @@ export default function Create() {
 
                     <div className='space-y-1.5'>
                         <Label htmlFor="name">Product Name</Label>
-                        <Input 
-                            placeholder="Product Name" 
-                            value={data.name} 
+                        <Input
+                            placeholder="Product Name"
+                            value={data.name}
                             onChange={(e) => setData('name', e.target.value)}
                             autoFocus
                         />
@@ -81,7 +84,7 @@ export default function Create() {
 
                     <div className='space-y-1.5'>
                         <Label htmlFor="artist">Artist</Label>
-                        <select 
+                        <select
                             value={data.artist_id}
                             onChange={(e) => setData('artist_id', e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -100,7 +103,7 @@ export default function Create() {
 
                     <div className='space-y-1.5'>
                         <Label htmlFor="category">Category</Label>
-                        <select 
+                        <select
                             value={data.product_category_id}
                             onChange={(e) => setData('product_category_id', e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -119,48 +122,45 @@ export default function Create() {
 
                     <div className='space-y-1.5'>
                         <Label htmlFor="price">Price</Label>
-                        <Input 
+                        <Input
                             type="number"
                             step="0.01"
-                            placeholder="29.99" 
-                            value={data.price} 
+                            placeholder="29.99"
+                            value={data.price}
                             onChange={(e) => setData('price', e.target.value)}
                         />
                     </div>
 
                     <div className='space-y-1.5'>
                         <Label htmlFor="stock">Stock</Label>
-                        <Input 
+                        <Input
                             type="number"
-                            placeholder="10" 
-                            value={data.stock} 
+                            placeholder="10"
+                            value={data.stock}
                             onChange={(e) => setData('stock', e.target.value)}
                         />
                     </div>
 
                     <div className='space-y-1.5'>
                         <Label htmlFor="description">Description</Label>
-                        <Textarea 
-                            placeholder="Product description..." 
-                            value={data.description} 
+                        <Textarea
+                            placeholder="Product description..."
+                            value={data.description}
                             onChange={(e) => setData('description', e.target.value)}
                             rows={5}
                         />
                     </div>
 
-                    <div className='space-y-1.5'>
-                        <Label htmlFor="image">Image URL (Optional)</Label>
-                        <Input 
-                            type="url"
-                            placeholder="https://..." 
-                            value={data.image} 
-                            onChange={(e) => setData('image', e.target.value)}
-                        />
-                    </div>
+                    <ImageInput
+                        label="Product image"
+                        onChange={(file) => setData('image', file)}
+                    />
 
-                    <Button 
-                        disabled={processing} 
-                        onClick={handleSubmit} 
+                    
+
+                    <Button
+                        disabled={processing}
+                        onClick={handleSubmit}
                         className="mt-4"
                     >
                         {processing ? 'Creating...' : 'Add Product'}

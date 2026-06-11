@@ -7,6 +7,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import { CircleAlert } from 'lucide-react';
+import ImageInput from '@/components/ImageInput';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -39,17 +40,20 @@ export default function Create() {
         release_year: '',
         artist_id: '',
         genre_ids: [] as string[],
+        image: null as File | null,
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('songs.store'));
+        post(route('songs.store'), {
+            forceFormData: true,
+        });
     }
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create a New Song" />
-            
+
             <div className="w-8/12 p-4">
                 <div className="space-y-4">
                     {/* ERRORES */}
@@ -70,9 +74,9 @@ export default function Create() {
                     {/* TITLE */}
                     <div className='space-y-1.5'>
                         <Label htmlFor="title">Title</Label>
-                        <Input 
-                            placeholder="Song Title" 
-                            value={data.title} 
+                        <Input
+                            placeholder="Song Title"
+                            value={data.title}
                             onChange={(e) => setData('title', e.target.value)}
                             autoFocus
                         />
@@ -81,7 +85,7 @@ export default function Create() {
                     {/* ARTIST (SELECT UNO SOLO) */}
                     <div className='space-y-1.5'>
                         <Label htmlFor="artist">Artist</Label>
-                        <select 
+                        <select
                             value={data.artist_id}
                             onChange={(e) => setData('artist_id', e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -102,7 +106,7 @@ export default function Create() {
                     <div className='space-y-1.5'>
                         <Label htmlFor="genres">Genres</Label>
                         {genres && genres.length > 0 ? (
-                            <select 
+                            <select
                                 multiple
                                 value={data.genre_ids}
                                 onChange={(e) => {
@@ -127,9 +131,9 @@ export default function Create() {
                     {/* DURATION */}
                     <div className='space-y-1.5'>
                         <Label htmlFor="duration">Duration</Label>
-                        <Input 
-                            placeholder="3:45" 
-                            value={data.duration} 
+                        <Input
+                            placeholder="3:45"
+                            value={data.duration}
                             onChange={(e) => setData('duration', e.target.value)}
                         />
                         <p className="text-xs text-gray-500">Format: MM:SS (e.g., 3:45)</p>
@@ -138,17 +142,22 @@ export default function Create() {
                     {/* RELEASE YEAR */}
                     <div className='space-y-1.5'>
                         <Label htmlFor="release_year">Release Year</Label>
-                        <Input 
-                            placeholder="2024" 
-                            value={data.release_year} 
+                        <Input
+                            placeholder="2024"
+                            value={data.release_year}
                             onChange={(e) => setData('release_year', e.target.value)}
                         />
                     </div>
 
+                    <ImageInput
+                        label="Song cover"
+                        onChange={(file) => setData('image', file)}
+                    />
+
                     {/* SUBMIT */}
-                    <Button 
-                        disabled={processing} 
-                        onClick={handleSubmit} 
+                    <Button
+                        disabled={processing}
+                        onClick={handleSubmit}
                         className="mt-4"
                     >
                         {processing ? 'Creating...' : 'Add Song'}

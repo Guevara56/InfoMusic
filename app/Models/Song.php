@@ -11,6 +11,7 @@ class Song extends Model
         'duration',
         'release_year',
         'artist_id',
+        'image',
     ];
 
     // Un artista por canción (belongsTo)

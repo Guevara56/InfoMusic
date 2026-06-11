@@ -28,7 +28,7 @@ class LabelController extends Controller
             'name' => 'required|string|max:255',
             'country' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'logo' => 'nullable|url',
+            'logo'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'website' => 'nullable|url',
         ]);
 

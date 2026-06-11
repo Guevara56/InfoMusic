@@ -6,10 +6,13 @@ use Inertia\Inertia;
 use App\Models\Song;
 use App\Models\Artist;
 use App\Models\Genre;
+use App\Traits\HandlesImageUpload;
 use Illuminate\Http\Request;
 
 class SongController extends Controller
 {
+    use HandlesImageUpload;
+
     public function index(Request $request)
     {
         $search = $request->input('search', '');
@@ -17,8 +20,8 @@ class SongController extends Controller
         $songs = Song::with(['artist', 'genres'])
             ->when($search, function ($query) use ($search) {
                 $query->where('title', 'LIKE', "%{$search}%")
-                      ->orWhereHas('artist', fn($q) => $q->where('name', 'LIKE', "%{$search}%"))
-                      ->orWhereHas('genres', fn($q) => $q->where('name', 'LIKE', "%{$search}%"));
+                    ->orWhereHas('artist', fn($q) => $q->where('name', 'LIKE', "%{$search}%"))
+                    ->orWhereHas('genres', fn($q) => $q->where('name', 'LIKE', "%{$search}%"));
             })
             ->orderBy('created_at', 'desc')
             ->paginate(50)
@@ -47,9 +50,20 @@ class SongController extends Controller
             'artist_id'    => 'required|exists:artists,id',
             'genre_ids'    => 'nullable|array',
             'genre_ids.*'  => 'exists:genres,id',
+            'image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        $song = Song::create($request->except('genre_ids'));
+
+        $data = $request->except('genre_ids');
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $this->uploadImage(
+                $request->file('image'),
+                'songs'
+            );
+        }
+
+        $song = Song::create($data);
 
         if ($request->genre_ids) {
             $song->genres()->attach($request->genre_ids);
@@ -76,14 +90,24 @@ class SongController extends Controller
             'artist_id'    => 'required|exists:artists,id',
             'genre_ids'    => 'nullable|array',
             'genre_ids.*'  => 'exists:genres,id',
+            'image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        $song->update($request->except('genre_ids'));
+        $data = $request->except('genre_ids');
+
+        if ($request->hasFile('image')) {
+            $this->deleteImage($song->image);
+
+            $data['image'] = $this->uploadImage(
+                $request->file('image'),
+                'songs'
+            );
+        }
+
+        $song->update($data);
 
         if ($request->has('genre_ids')) {
             $song->genres()->sync($request->genre_ids);
-        } else {
-            $song->genres()->detach();
         }
 
         return redirect()->route('songs.index')->with('message', 'Song updated successfully.');

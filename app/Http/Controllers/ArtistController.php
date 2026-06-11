@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Artist;
 use App\Models\Label;
+use App\Models\Genre;
 use App\Traits\HandlesImageUpload;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -22,7 +23,12 @@ class ArtistController extends Controller
     public function create()
     {
         $labels = Label::orderBy('name')->get();
-        return Inertia::render('Artists/Create', compact('labels'));
+        $genres = Genre::orderBy('name')->get();
+
+        return Inertia::render('Artists/Create', [
+            'labels' => $labels,
+            'genres' => $genres,
+        ]);
     }
 
     public function store(Request $request)
