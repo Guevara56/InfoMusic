@@ -144,4 +144,9 @@ class PublicController extends Controller
             'product' => $product,
         ]);
     }
+
+    public function about ()
+    {
+        return Inertia::render('About/Index');
+    }
 }

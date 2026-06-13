@@ -6,6 +6,21 @@ use App\Http\Controllers\Settings\TwoFactorAuthenticationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+use Illuminate\Http\Request;
+use Laravel\Fortify\Features;
+
+Route::get('perfil', function (Request $request) {
+    $user = $request->user();
+    return Inertia::render('Perfil/Index', [
+        'mustVerifyEmail'      => $user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail,
+        'status'               => $request->session()->get('status'),
+        'twoFactorEnabled'     => $user->hasEnabledTwoFactorAuthentication(),
+        'requiresConfirmation' => Features::optionEnabled(
+            Features::twoFactorAuthentication(), 'confirm'
+        ),
+    ]);
+})->name('perfil');
+
 Route::middleware('auth')->group(function () {
     Route::redirect('settings', '/settings/profile');
 

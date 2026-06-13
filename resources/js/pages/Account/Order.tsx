@@ -39,13 +39,13 @@ export default function OrderPage() {
                 }}
             >
                 <Link
-                    href="/account"
+                    href="/account/orders"
                     style={{
                         color: '#c8f050',
                         textDecoration: 'none',
                     }}
                 >
-                    ← Volver a mi cuenta
+                    ← Volver a mis pedidos
                 </Link>
 
                 <h1

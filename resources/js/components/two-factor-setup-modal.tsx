@@ -319,7 +319,7 @@ export default function TwoFactorSetupModal({
                 <div className="flex flex-col items-center space-y-5">
                     {showVerificationStep ? (
                         <TwoFactorVerificationStep
-                            onClose={onClose}
+                            onClose={handleClose}
                             onBack={() => setShowVerificationStep(false)}
                         />
                     ) : (

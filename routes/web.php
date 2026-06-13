@@ -19,6 +19,7 @@ use Laravel\Fortify\Features;
 
 // ── RUTAS PÚBLICAS ────────────────────────────────────────────
 Route::get('/', [PublicController::class, 'home'])->name('home');
+Route::get('/about', [PublicController::class, 'about'])->name('about');
 
 Route::get('/email-verified', function () {
     return Inertia::render('email-verified');
@@ -73,8 +74,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/account', [\App\Http\Controllers\AccountController::class, 'index'])->name('account.index');
+    Route::get('/account/orders', [AccountController::class, 'orders'])
+        ->name('account.orders');
     Route::get('/account/orders/{order}', [\App\Http\Controllers\AccountController::class, 'show'])->name('account.orders.show');
-    Route::patch('/account/shipping', [\App\Http\Controllers\AccountController::class, 'updateShipping'])->name('account.shipping.update');
 });
 
 require __DIR__ . '/settings.php';

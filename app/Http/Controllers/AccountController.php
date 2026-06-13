@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Laravel\Fortify\Features;
 
 class AccountController extends Controller
 {
@@ -39,6 +41,13 @@ class AccountController extends Controller
             ]);
 
         return Inertia::render('Account/Index', [
+            'mustVerifyEmail' => $user instanceof MustVerifyEmail,
+            'status' => session()->get('status'),
+            'twoFactorEnabled' => $user->hasEnabledTwoFactorAuthentication(),
+            'requiresConfirmation' => Features::optionEnabled(
+                Features::twoFactorAuthentication(),
+                'confirm'
+            ),
             'user' => [
                 'name' => $user->name,
                 'email' => $user->email,
@@ -85,6 +94,33 @@ class AccountController extends Controller
                     'subtotal' => $item->subtotal,
                 ]),
             ],
+        ]);
+    }
+
+    public function orders()
+    {
+        $user = Auth::user();
+
+        $orders = $user->orders()
+            ->with('items')
+            ->latest()
+            ->get()
+            ->map(fn($order) => [
+                'id'          => $order->id,
+                'status'      => $order->status_label,
+                'total'       => $order->total,
+                'created_at'  => $order->created_at->format('d/m/Y'),
+                'items_count' => $order->items->count(),
+                'items'       => $order->items->map(fn($item) => [
+                    'name'     => $item->product_name,
+                    'quantity' => $item->quantity,
+                    'price'    => $item->price,
+                    'subtotal' => $item->subtotal,
+                ]),
+            ]);
+
+        return Inertia::render('Account/Orders', [
+            'orders' => $orders,
         ]);
     }
 }
