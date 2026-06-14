@@ -103,7 +103,7 @@ export default function Create() {
                             rows={5}
                         />
                     </div>
-
+                            
                     <div className='space-y-1.5'>
                         <Label htmlFor="logo">Logo URL (Optional)</Label>
                         <Input 

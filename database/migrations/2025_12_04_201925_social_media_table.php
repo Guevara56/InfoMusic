@@ -10,18 +10,10 @@ return new class extends Migration
     {
         Schema::create('social_media', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('artist_id')->constrained()->onDelete('cascade');
             $table->string('platform');
             $table->string('url');
             $table->string('followers')->nullable();
-            $table->foreignId('artist_id')->constrained('artists')->onDelete('cascade');
-            $table->timestamps();
-        });
-
-        Schema::create('artist_social_media', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('artist_id')->constrained()->onDelete('cascade');
-            $table->foreignId('social_media_id')->constrained()->onDelete('cascade');
-            $table->unique(['artist_id', 'social_media_id']);
             $table->timestamps();
         });
     }

@@ -2,11 +2,10 @@ import PublicLayout from '@/layouts/public-layout';
 import { Head } from '@inertiajs/react';
 import { Clock, Calendar, Music2, ArrowLeft } from 'lucide-react';
 
-interface Genre  { id: number; name: string; }
+interface Genre { id: number; name: string; }
 interface Artist { id: number; name: string; country: string; avatar: string | null; }
-interface Song   { id: number; title: string; duration: string; release_year: string; image: string | null; artist: Artist; genres: Genre[]; }
-
-const sImg = (v: string | null) => !v ? '/images/default-song.svg'   : v.startsWith('http') ? v : `/storage/${v}`;
+interface Song { id: number; title: string; duration: string; release_year: string; image: string | null; artist: Artist; genres: Genre[]; spotify_url?: string | null; apple_music_url?: string | null; youtube_url?: string | null; }
+const sImg = (v: string | null) => !v ? '/images/default-song.svg' : v.startsWith('http') ? v : `/storage/${v}`;
 const aImg = (v: string | null) => !v ? '/images/default-artist.svg' : v.startsWith('http') ? v : `/storage/${v}`;
 
 export default function SongShow({ song }: { song: Song }) {
@@ -24,6 +23,26 @@ export default function SongShow({ song }: { song: Song }) {
                     <img src={sImg(song.image)} alt={song.title}
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         onError={e => { (e.target as HTMLImageElement).src = '/images/default-song.svg'; }} />
+                </div>
+
+                <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
+                    {song.spotify_url && (
+                        <a href={song.spotify_url} target="_blank" rel="noreferrer">
+                            Spotify
+                        </a>
+                    )}
+
+                    {song.apple_music_url && (
+                        <a href={song.apple_music_url} target="_blank" rel="noreferrer">
+                            Apple Music
+                        </a>
+                    )}
+
+                    {song.youtube_url && (
+                        <a href={song.youtube_url} target="_blank" rel="noreferrer">
+                            YouTube
+                        </a>
+                    )}
                 </div>
 
                 {/* Info */}

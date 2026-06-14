@@ -15,6 +15,11 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             $table->string('country')->nullable();
             $table->string('formed_year')->nullable();
+
+            $table->string('spotify_url')->nullable();
+            $table->string('apple_music_url')->nullable();
+            $table->string('youtube_url')->nullable();
+
             $table->foreignId('label_id')->nullable()->constrained('labels')->onDelete('set null');
             $table->timestamps();
         });

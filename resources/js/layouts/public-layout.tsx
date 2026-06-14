@@ -2,8 +2,7 @@ import { Link, usePage, router } from '@inertiajs/react';
 import { type ReactNode, useState, useRef, useEffect } from 'react';
 import { Music2, Disc3, Mic2, Radio, ShoppingBag, LayoutDashboard, LogIn, ShoppingCart, Plus, Minus, Trash2, X, Info, Shield, FileText, Cookie, Check, Moon, Sun } from 'lucide-react';
 import Profilebutton from '@/components/ui/Profilebutton';
-
-
+import Cookies from 'js-cookie';
 
 interface PublicLayoutProps {
     children: ReactNode;
@@ -23,6 +22,7 @@ interface CartItem {
     subtotal: number;
     category: string | null;
     artist: string | null;
+    image: string | null;
 }
 
 interface SharedProps {
@@ -36,76 +36,23 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
     const isAdmin = user?.role === 'admin';
 
     const [cartOpen, setCartOpen] = useState(false);
-    const [showCookieBanner, setShowCookieBanner] = useState(false);
     const cartRef = useRef<HTMLDivElement>(null);
-    const [themeMode, setThemeMode] = useState<'light' | 'dark'>('dark');
 
-    useEffect(() => {
-        const savedTheme = localStorage.getItem('infomusic_theme');
+    const [themeMode, setThemeMode] = useState<'light' | 'dark'>(() => {
+        const saved = localStorage.getItem('infomusic_theme');
+        if (saved === 'light' || saved === 'dark') return saved;
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    });
 
-        if (savedTheme === 'light' || savedTheme === 'dark') {
-            setThemeMode(savedTheme);
-            return;
-        }
-
-        const prefersDark = window.matchMedia(
-            '(prefers-color-scheme: dark)'
-        ).matches;
-
-        setThemeMode(prefersDark ? 'dark' : 'light');
-    }, []);
+    const [showCookieBanner, setShowCookieBanner] = useState(
+        () => localStorage.getItem('infomusic_cookie_consent') === null
+    );
 
     useEffect(() => {
         localStorage.setItem('infomusic_theme', themeMode);
-
         document.documentElement.classList.remove('light', 'dark');
         document.documentElement.classList.add(themeMode);
     }, [themeMode]);
-
-    const toggleThemeMode = () => {
-        setThemeMode((prev) =>
-            prev === 'light' ? 'dark' : 'light'
-        );
-    };
-
-    const theme =
-        themeMode === 'dark'
-            ? {
-                background: '#0a0a0f',
-                backgroundSecondary: '#13131f',
-                backgroundTertiary: '#09090e',
-
-                text: '#e8e8f0',
-                textSecondary: '#888',
-                textMuted: '#555',
-
-                border: '#1a1a2a',
-                borderStrong: '#2a2a3a',
-
-                card: '#13131f',
-                navbar: 'rgba(10,10,15,0.95)',
-                footer: '#09090e',
-
-                accent: '#c8f050',
-            }
-            : {
-                background: '#f7f8fc',
-                backgroundSecondary: '#ffffff',
-                backgroundTertiary: '#eef1f7',
-
-                text: '#111827',
-                textSecondary: '#4b5563',
-                textMuted: '#6b7280',
-
-                border: '#dbe2ea',
-                borderStrong: '#cfd8e3',
-
-                card: '#ffffff',
-                navbar: 'rgba(255,255,255,0.95)',
-                footer: '#f1f5f9',
-
-                accent: '#c8f050',
-            };
 
     useEffect(() => {
         const handler = (e: MouseEvent) => {
@@ -117,9 +64,11 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
         return () => document.removeEventListener('mousedown', handler);
     }, []);
 
-    useEffect(() => {
-        setShowCookieBanner(localStorage.getItem('infomusic_cookie_consent') === null);
-    }, []);
+    const toggleThemeMode = () => {
+        const newMode = themeMode === 'light' ? 'dark' : 'light';
+        setThemeMode(newMode);
+        Cookies.set('themeMode', newMode);
+    };
 
     const handleCookieChoice = (choice: 'accepted' | 'rejected') => {
         localStorage.setItem('infomusic_cookie_consent', choice);
@@ -134,6 +83,36 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
         router.patch(`/cart/${productId}`, { quantity }, { preserveScroll: true });
     };
 
+    const theme = themeMode === 'dark'
+        ? {
+            background: '#0a0a0f',
+            backgroundSecondary: '#13131f',
+            backgroundTertiary: '#09090e',
+            text: '#e8e8f0',
+            textSecondary: '#888',
+            textMuted: '#555',
+            border: '#1a1a2a',
+            borderStrong: '#2a2a3a',
+            card: '#13131f',
+            navbar: 'rgba(10,10,15,0.95)',
+            footer: '#09090e',
+            accent: '#c8f050',
+        }
+        : {
+            background: '#f7f8fc',
+            backgroundSecondary: '#ffffff',
+            backgroundTertiary: '#eef1f7',
+            text: '#111827',
+            textSecondary: '#4b5563',
+            textMuted: '#6b7280',
+            border: '#dbe2ea',
+            borderStrong: '#cfd8e3',
+            card: '#ffffff',
+            navbar: 'rgba(255,255,255,0.95)',
+            footer: '#f1f5f9',
+            accent: '#c8f050',
+        };
+
     const navLinks = [
         { href: '/explore/artists', label: 'Artistas', icon: Mic2 },
         { href: '/explore/songs', label: 'Canciones', icon: Music2 },
@@ -143,7 +122,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
     ];
 
     return (
-        <div className="min-h-screen" style={{ background: theme.background, color: theme.text, fontFamily: "'DM Sans', sans-serif", transition: 'all .25s ease', }}>
+        <div className="min-h-screen" style={{ background: theme.background, color: theme.text, fontFamily: "'DM Sans', sans-serif", transition: 'all .25s ease' }}>
             <style>{`
                 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&family=Playfair+Display:wght@700;900&display=swap');
                 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -168,7 +147,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                 .remove-btn:hover { color: #ef4444; }
                 .account-link { color: #888; text-decoration: none; transition: all 0.2s ease; }
                 .account-link:hover { color: #c8f050; transform: translateX(-3px); }
-                .order-detail-link {color: #c8f050;text-decoration: none;font-size: 13px;font-weight: 600;transition: all 0.2s ease;display: inline-block;}
+                .order-detail-link { color: #c8f050; text-decoration: none; font-size: 13px; font-weight: 600; transition: all 0.2s ease; display: inline-block; }
                 .order-detail-link:hover { transform: translateX(4px); color: #d7ff5f; text-shadow: 0 0 10px rgba(200,240,80,0.4); }
                 .footer-link { color: #888; text-decoration: none; font-size: 13px; display: inline-flex; align-items: center; gap: 7px; transition: color 0.18s ease; }
                 .footer-link:hover { color: #c8f050; }
@@ -184,11 +163,9 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                 }
             `}</style>
 
-            {/* NAV */}
             <nav style={{ borderBottom: `1px solid ${theme.border}`, padding: '0 2rem', position: 'sticky', top: 0, zIndex: 100, background: theme.navbar, backdropFilter: 'blur(12px)' }}>
                 <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', gap: '2rem', height: 60 }}>
 
-                    {/* Logo */}
                     <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8, marginRight: 12 }}>
                         <div style={{ width: 28, height: 28, borderRadius: 6, background: '#c8f050', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <Music2 size={16} color="#0a0a0f" strokeWidth={2.5} />
@@ -196,7 +173,6 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                         <span style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.1rem', fontWeight: 700, color: theme.text }}>InfoMusic</span>
                     </Link>
 
-                    {/* Nav links */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, flex: 1 }}>
                         {navLinks.map(({ href, label, icon: Icon }) => (
                             <a key={href} href={href} className="nav-link">
@@ -205,13 +181,11 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                         ))}
                     </div>
 
-                    {/* Auth + carrito */}
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
 
-                        {/* CARRITO DROPDOWN — solo si está logueado */}
                         {user && (
                             <div ref={cartRef} style={{ position: 'relative' }}>
-                                <button className="cart-btn" style={{ border:`1px solid ${theme.borderStrong}`, color:theme.text }} onClick={() => setCartOpen(o => !o)}>
+                                <button className="cart-btn" style={{ border: `1px solid ${theme.borderStrong}`, color: theme.text }} onClick={() => setCartOpen(o => !o)}>
                                     <ShoppingCart size={14} />
                                     Carrito
                                     {cart?.count > 0 && (
@@ -219,10 +193,8 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                                     )}
                                 </button>
 
-                                {/* PANEL */}
                                 {cartOpen && (
                                     <div className="cart-panel" style={{ background: theme.backgroundSecondary, border: `1px solid ${theme.borderStrong}` }}>
-                                        {/* Header */}
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 1.2rem', borderBottom: `1px solid ${theme.border}` }}>
                                             <span style={{ fontWeight: 600, fontSize: 14 }}>Mi carrito</span>
                                             <button onClick={() => setCartOpen(false)} style={{ background: 'none', border: 'none', color: theme.textSecondary, cursor: 'pointer', display: 'flex' }}>
@@ -230,13 +202,12 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                                             </button>
                                         </div>
 
-                                        {/* Items */}
                                         {!cart?.items?.length ? (
                                             <div style={{ padding: '2.5rem 1.2rem', textAlign: 'center', color: theme.textMuted }}>
                                                 <ShoppingBag size={32} style={{ margin: '0 auto 0.8rem', opacity: 0.3 }} />
                                                 <p style={{ fontSize: 13 }}>Tu carrito está vacío</p>
                                                 <a href="/explore/shop" onClick={() => setCartOpen(false)} style={{ display: 'inline-block', marginTop: 12, fontSize: 12, color: '#c8f050', textDecoration: 'none' }}>
-                                                    Ver tienda →
+                                                    Ver tienda
                                                 </a>
                                             </div>
                                         ) : (
@@ -244,8 +215,19 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                                                 <div style={{ maxHeight: 320, overflowY: 'auto', padding: '0.6rem 0' }}>
                                                     {cart.items.map(item => (
                                                         <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0.7rem 1.2rem' }}>
-                                                            <div style={{ width: 36, height: 36, borderRadius: 6, background: '#1a1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                                                <ShoppingBag size={16} color="#2a2a4a" />
+                                                            <div style={{ width: 36, height: 36, borderRadius: 6, overflow: 'hidden', flexShrink: 0, background: '#1a1a2e' }}>
+                                                                {item.image ? (
+                                                                    <img
+                                                                        src={item.image.startsWith('http') ? item.image : `/storage/${item.image}`}
+                                                                        alt={item.name}
+                                                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                                        onError={e => { (e.target as HTMLImageElement).src = '/images/default-product.svg'; }}
+                                                                    />
+                                                                ) : (
+                                                                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                        <ShoppingBag size={16} color="#2a2a4a" />
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                             <div style={{ flex: 1, minWidth: 0 }}>
                                                                 <div style={{ fontSize: 13, fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</div>
@@ -268,7 +250,6 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                                                     ))}
                                                 </div>
 
-                                                {/* Footer */}
                                                 <div style={{ borderTop: '1px solid #1e1e2e', padding: '1rem 1.2rem' }}>
                                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.9rem' }}>
                                                         <span style={{ fontSize: 13, color: theme.textSecondary }}>Total</span>
@@ -289,41 +270,27 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                             </div>
                         )}
 
-                        {/* Dashboard — SOLO admin */}
                         {isAdmin && (
                             <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', background: '#c8f050', color: '#0a0a0f', borderRadius: 8, textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>
                                 <LayoutDashboard size={14} /> Dashboard
                             </Link>
                         )}
 
-                        {/* Login — solo si NO logueado */}
                         {!user && (
-                            <Link href="/login" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px',border: `1px solid ${theme.borderStrong}`, color: theme.text, borderRadius: 8, textDecoration: 'none', fontSize: 13, fontWeight: 500 }}>
+                            <Link href="/login" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', border: `1px solid ${theme.borderStrong}`, color: theme.text, borderRadius: 8, textDecoration: 'none', fontSize: 13, fontWeight: 500 }}>
                                 <LogIn size={14} /> Entrar
                             </Link>
                         )}
 
-                        {/* Perfil usuario */}
-                        {user && (
-                            <Profilebutton user={user} />
-                        )}
+                        {user && <Profilebutton user={user} />}
 
                         <button
                             onClick={toggleThemeMode}
-                            title={
-                                themeMode === 'light'
-                                    ? 'Activar modo oscuro'
-                                    : 'Activar modo claro'
-                            }
-                            style={{ width: 38, height: 38, borderRadius: 10, border: `1px solid ${theme.borderStrong}`, background: theme.backgroundSecondary, color: theme.text, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all .2s ease', }}
+                            title={themeMode === 'light' ? 'Activar modo oscuro' : 'Activar modo claro'}
+                            style={{ width: 38, height: 38, borderRadius: 10, border: `1px solid ${theme.borderStrong}`, background: theme.backgroundSecondary, color: theme.text, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all .2s ease' }}
                         >
-                            {themeMode === 'light' ? (
-                                <Moon size={16} />
-                            ) : (
-                                <Sun size={16} />
-                            )}
+                            {themeMode === 'light' ? <Moon size={16} /> : <Sun size={16} />}
                         </button>
-
                     </div>
                 </div>
             </nav>

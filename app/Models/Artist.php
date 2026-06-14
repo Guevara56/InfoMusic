@@ -6,7 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Artist extends Model
 {
-    protected $fillable = ['name', 'bio', 'avatar', 'country', 'formed_year', 'label_id'];
+    protected $fillable = [
+        'name',
+        'bio',
+        'avatar',
+        'country',
+        'formed_year',
+        'spotify_url',
+        'apple_music_url',
+        'youtube_url',
+        'label_id',
+    ];
 
     public function label()
     {
@@ -22,7 +32,7 @@ class Artist extends Model
     {
         return $this->hasMany(Product::class);
     }
-
+    
     public function socialMedia()
     {
         return $this->hasMany(SocialMedia::class);

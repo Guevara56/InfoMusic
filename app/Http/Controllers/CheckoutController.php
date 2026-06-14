@@ -12,6 +12,7 @@ use Inertia\Inertia;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
 use App\Notifications\OrderPlacedNotification;
+use Illuminate\Support\Facades\Storage;
 
 class CheckoutController extends Controller
 {
@@ -56,7 +57,7 @@ class CheckoutController extends Controller
         return Inertia::render('Checkout/Index', [
             'items'         => $items,
             'total'         => $total,
-            'prefill' => ['name' => $user->name,'email' => $user->email,'phone' => $user->phone,'address' => $user->address,'city' => $user->city,'postal_code' => $user->postal_code,'country' => $user->country,],
+            'prefill' => ['name' => $user->name, 'email' => $user->email, 'phone' => $user->phone, 'address' => $user->address, 'city' => $user->city, 'postal_code' => $user->postal_code, 'country' => $user->country,],
             'clientSecret'  => $paymentIntent->client_secret,
             'stripeKey'     => config('services.stripe.key'),
         ]);
@@ -154,7 +155,7 @@ class CheckoutController extends Controller
     public function confirmation()
     {
         $order = Order::where('user_id', Auth::id())
-            ->with('items')
+            ->with('items.product')
             ->latest()
             ->first();
 
@@ -169,11 +170,14 @@ class CheckoutController extends Controller
                 'city'        => $order->city,
                 'postal_code' => $order->postal_code,
                 'country'     => $order->country,
-                'items'       => $order->items->map(fn($i) => [
+                'items' => $order->items->map(fn($i) => [
                     'name'     => $i->product_name,
                     'price'    => $i->price,
                     'quantity' => $i->quantity,
                     'subtotal' => $i->subtotal,
+                    'image'    => $i->product?->image          
+                        ? Storage::url($i->product->image)
+                        : null,
                 ]),
             ] : null,
         ]);

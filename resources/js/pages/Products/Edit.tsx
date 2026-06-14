@@ -55,9 +55,9 @@ export default function Edit() {
 
 
     return (
-        <AppLayout breadcrumbs={[{title: 'Edit Product', href: `/products/${product.id}/edit`}]}>
+        <AppLayout breadcrumbs={[{ title: 'Edit Product', href: `/products/${product.id}/edit` }]}>
             <Head title="Update Product" />
-            
+
             <div className="w-8/12 p-4">
                 <div className="space-y-4">
                     {/* ERRORES */}
@@ -78,9 +78,9 @@ export default function Edit() {
                     {/* NAME */}
                     <div className='space-y-1.5'>
                         <Label htmlFor="name">Product Name</Label>
-                        <Input 
-                            placeholder="Product Name" 
-                            value={data.name} 
+                        <Input
+                            placeholder="Product Name"
+                            value={data.name}
                             onChange={(e) => setData('name', e.target.value)}
                             autoFocus
                         />
@@ -89,7 +89,7 @@ export default function Edit() {
                     {/* ARTIST */}
                     <div className='space-y-1.5'>
                         <Label htmlFor="artist">Artist</Label>
-                        <select 
+                        <select
                             value={data.artist_id}
                             onChange={(e) => setData('artist_id', e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -106,7 +106,7 @@ export default function Edit() {
                     {/* CATEGORY */}
                     <div className='space-y-1.5'>
                         <Label htmlFor="category">Category</Label>
-                        <select 
+                        <select
                             value={data.product_category_id}
                             onChange={(e) => setData('product_category_id', e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -123,11 +123,11 @@ export default function Edit() {
                     {/* PRICE */}
                     <div className='space-y-1.5'>
                         <Label htmlFor="price">Price</Label>
-                        <Input 
+                        <Input
                             type="number"
                             step="0.01"
-                            placeholder="29.99" 
-                            value={data.price} 
+                            placeholder="29.99"
+                            value={data.price}
                             onChange={(e) => setData('price', e.target.value)}
                         />
                     </div>
@@ -135,10 +135,10 @@ export default function Edit() {
                     {/* STOCK */}
                     <div className='space-y-1.5'>
                         <Label htmlFor="stock">Stock</Label>
-                        <Input 
+                        <Input
                             type="number"
-                            placeholder="10" 
-                            value={data.stock} 
+                            placeholder="10"
+                            value={data.stock}
                             onChange={(e) => setData('stock', e.target.value)}
                         />
                     </div>
@@ -146,29 +146,24 @@ export default function Edit() {
                     {/* DESCRIPTION */}
                     <div className='space-y-1.5'>
                         <Label htmlFor="description">Description</Label>
-                        <Textarea 
-                            placeholder="Product description..." 
-                            value={data.description} 
+                        <Textarea
+                            placeholder="Product description..."
+                            value={data.description}
                             onChange={(e) => setData('description', e.target.value)}
                             rows={5}
                         />
                     </div>
 
                     {/* IMAGE */}
-                    <div className='space-y-1.5'>
-                        <Label htmlFor="image">Image URL (Optional)</Label>
-                        <Input 
-                            type="url"
-                            placeholder="https://..." 
-                            value={data.image} 
-                            onChange={(e) => setData('image', e.target.value)}
-                        />
-                    </div>
+                    <ImageInput
+                        label="Product image"
+                        onChange={(file) => setData('image', file)}
+                    />
 
                     {/* SUBMIT */}
-                    <Button 
-                        disabled={processing} 
-                        onClick={handleUpdate} 
+                    <Button
+                        disabled={processing}
+                        onClick={handleUpdate}
                         className="mt-4"
                     >
                         {processing ? 'Updating...' : 'Update Product'}

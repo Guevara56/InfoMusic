@@ -7,6 +7,7 @@ interface OrderItem {
     price: number;
     quantity: number;
     subtotal: number;
+    image?: string | null;
 }
 
 interface Order {
@@ -24,6 +25,11 @@ interface Order {
 
 interface PageProps {
     order: Order | null;
+}
+
+function pImg(v: string | null | undefined) {
+    if (!v) return null;
+    return v.startsWith('http') ? v : `/storage/${v}`;
 }
 
 export default function Confirmation() {
@@ -66,19 +72,46 @@ export default function Confirmation() {
                     <h3 style={{ fontSize: '0.85rem', fontWeight: 600, color: '#666', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1rem' }}>
                         Productos
                     </h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: '1.2rem' }}>
-                        {order.items.map((item, i) => (
-                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                <div style={{ width: 32, height: 32, borderRadius: 6, background: '#1a1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                    <ShoppingBag size={14} color="#2a2a4a" />
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: '1.2rem' }}>
+                        {order.items.map((item, i) => {
+                            const src = pImg(item.image);
+                            return (
+                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                    {/* Miniatura */}
+                                    <div style={{
+                                        width: 44, height: 44, borderRadius: 8,
+                                        overflow: 'hidden', flexShrink: 0,
+                                        background: '#1a1a2e',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    }}>
+                                        {src ? (
+                                            <img
+                                                src={src}
+                                                alt={item.name}
+                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                                            />
+                                        ) : (
+                                            <ShoppingBag size={16} color="#2a2a4a" />
+                                        )}
+                                    </div>
+
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div style={{ fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                            {item.name}
+                                        </div>
+                                        <div style={{ fontSize: 11, color: '#555', marginTop: 2 }}>
+                                            ×{item.quantity} · {Number(item.price).toFixed(2)} € c/u
+                                        </div>
+                                    </div>
+
+                                    <div style={{ fontSize: 13, fontWeight: 700, flexShrink: 0 }}>
+                                        {Number(item.subtotal).toFixed(2)} €
+                                    </div>
                                 </div>
-                                <div style={{ flex: 1 }}>
-                                    <div style={{ fontSize: 13, fontWeight: 500 }}>{item.name}</div>
-                                    <div style={{ fontSize: 11, color: '#555' }}>x{item.quantity} · {Number(item.price).toFixed(2)} € c/u</div>
-                                </div>
-                                <div style={{ fontSize: 13, fontWeight: 600 }}>{Number(item.subtotal).toFixed(2)} €</div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
 
                     {/* Total */}

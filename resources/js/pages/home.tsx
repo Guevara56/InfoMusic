@@ -1,16 +1,16 @@
 import PublicLayout from '@/layouts/public-layout';
 import { Head } from '@inertiajs/react';
-import { Music2, Mic2, Disc3, ShoppingBag, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 
-interface Artist  { id: number; name: string; country: string; avatar: string | null; label?: { name: string }; }
-interface Song    { id: number; title: string; duration: string; release_year: string; image: string | null; artist: Artist; genres: { name: string }[]; }
-interface Genre   { id: number; name: string; }
+interface Artist { id: number; name: string; country: string; avatar: string | null; label?: { name: string }; }
+interface Song { id: number; title: string; duration: string; release_year: string; image: string | null; artist: Artist; genres: { name: string }[]; }
+interface Genre { id: number; name: string; }
 interface Product { id: number; name: string; price: number; image: string | null; artist: Artist; category?: { name: string }; }
 
 interface Props { artists: Artist[]; songs: Song[]; genres: Genre[]; products: Product[]; }
 
-const GENRE_COLORS = ['#c8f050','#50c8f0','#f050c8','#f0c850','#50f0c8','#c850f0','#f08050','#50f080'];
+const GENRE_COLORS = ['#c8f050', '#50c8f0', '#f050c8', '#f0c850', '#50f0c8', '#c850f0', '#f08050', '#50f080'];
 
 const aImg = (v: string | null) => !v ? '/images/default-artist.svg' : v.startsWith('http') ? v : `/storage/${v}`;
 const pImg = (v: string | null) => !v ? '/images/default-product.svg' : v.startsWith('http') ? v : `/storage/${v}`;
@@ -22,43 +22,156 @@ export default function Home({ artists, songs, genres, products }: Props) {
             <Head title="InfoMusic — Inicio" />
 
             {/* HERO */}
-            <section style={{ textAlign: 'center', padding: '4rem 0 5rem', position: 'relative' }}>
-                <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 60% at 50% 0%, rgba(200,240,80,0.07) 0%, transparent 70%)', pointerEvents: 'none' }} />
-                <p style={{ fontSize: 12, letterSpacing: '0.2em', color: '#c8f050', fontWeight: 600, textTransform: 'uppercase', marginBottom: '1rem' }}>Tu enciclopedia musical</p>
-                <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', fontWeight: 900, lineHeight: 1.05, letterSpacing: '-0.03em', marginBottom: '1.5rem' }}>
-                    Descubre artistas,<br /><span style={{ color: '#c8f050' }}>canciones</span> y más.
-                </h1>
-                <p style={{ color: '#777', fontSize: '1.05rem', maxWidth: 480, margin: '0 auto 2.5rem' }}>
-                    Explora discografías, géneros, discográficas y el merchandising oficial de tus artistas favoritos.
-                </p>
-                <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-                    <a href="/explore/artists" style={{ padding: '12px 28px', background: '#c8f050', color: '#0a0a0f', borderRadius: 10, fontWeight: 700, fontSize: 14, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <Mic2 size={16} /> Explorar artistas
-                    </a>
-                    <a href="/explore/shop" style={{ padding: '12px 28px', border: '1px solid #2a2a3a', color: '#ccc', borderRadius: 10, fontWeight: 500, fontSize: 14, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <ShoppingBag size={16} /> Ir a la tienda
-                    </a>
-                </div>
-            </section>
+            <section style={{
+                position: 'relative',
+                padding: '5rem 0 6rem',
+                marginBottom: '4rem',
+                overflow: 'hidden',
+            }}>
+                {/* Fondo decorativo */}
+                <div style={{
+                    position: 'absolute',
+                    width: 500,
+                    height: 500,
+                    borderRadius: '50%',
+                    background: 'rgba(200,240,80,0.08)',
+                    filter: 'blur(140px)',
+                    top: -200,
+                    right: -150,
+                    pointerEvents: 'none',
+                }} />
 
-            {/* STATS */}
-            <section style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: '4rem' }}>
-                {[
-                    { label: 'Artistas',  value: artists.length,  icon: Mic2 },
-                    { label: 'Canciones', value: songs.length,    icon: Music2 },
-                    { label: 'Géneros',   value: genres.length,   icon: Disc3 },
-                    { label: 'Productos', value: products.length, icon: ShoppingBag },
-                ].map(({ label, value, icon: Icon }) => (
-                    <div key={label} style={{ background: '#13131f', border: '1px solid #1e1e2e', borderRadius: 12, padding: '1.2rem 1.5rem', display: 'flex', alignItems: 'center', gap: 14 }}>
-                        <div style={{ width: 40, height: 40, borderRadius: 8, background: 'rgba(200,240,80,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Icon size={18} color="#c8f050" />
-                        </div>
-                        <div>
-                            <div style={{ fontSize: '1.5rem', fontWeight: 700, fontFamily: 'Playfair Display, serif' }}>{value}</div>
-                            <div style={{ fontSize: 12, color: '#666', fontWeight: 500 }}>{label}</div>
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1.2fr 1fr',
+                    gap: '3rem',
+                    alignItems: 'center',
+                }}>
+
+                    {/* TEXTO */}
+                    <div>
+                        <p style={{
+                            fontSize: 12,
+                            letterSpacing: '0.2em',
+                            color: '#c8f050',
+                            fontWeight: 700,
+                            textTransform: 'uppercase',
+                            marginBottom: '1rem',
+                        }}>
+                            Plataforma musical
+                        </p>
+
+                        <h1 style={{
+                            fontFamily: 'Playfair Display, serif',
+                            fontSize: 'clamp(3rem, 6vw, 5rem)',
+                            fontWeight: 900,
+                            lineHeight: 1,
+                            marginBottom: '1.5rem',
+                        }}>
+                            Toda la música
+                            <br />
+                            en un solo lugar
+                        </h1>
+
+                        <p style={{
+                            color: '#888',
+                            fontSize: '1.05rem',
+                            lineHeight: 1.8,
+                            maxWidth: 550,
+                            marginBottom: '2rem',
+                        }}>
+                            Descubre artistas, explora canciones, consulta información musical y encuentra merchandising oficial desde una única plataforma.
+                        </p>
+
+                        <div style={{
+                            display: 'flex',
+                            gap: 12,
+                            flexWrap: 'wrap',
+                            marginBottom: '2rem',
+                        }}>
+                            <a href="/explore/artists" style={{
+                                padding: '14px 28px',
+                                background: '#c8f050',
+                                color: '#111',
+                                borderRadius: 12,
+                                textDecoration: 'none',
+                                fontWeight: 700,
+                            }}>
+                                Explorar artistas
+                            </a>
+
+                            <a href="/explore/shop" style={{
+                                padding: '14px 28px',
+                                border: '1px solid #2a2a3a',
+                                color: '#ddd',
+                                borderRadius: 12,
+                                textDecoration: 'none',
+                                fontWeight: 600,
+                            }}>
+                                Ir a la tienda
+                            </a>
                         </div>
                     </div>
-                ))}
+
+                    {/* COLLAGE DE ARTISTAS */}
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(2,1fr)',
+                        gap: 16,
+                    }}>
+                        {artists.slice(0, 4).map((artist) => (
+                            <a
+                                key={artist.id}
+                                href={`/explore/artists/${artist.id}`}
+                                style={{
+                                    position: 'relative',
+                                    overflow: 'hidden',
+                                    borderRadius: 20,
+                                    aspectRatio: '1',
+                                    background: '#13131f',
+                                    border: '1px solid #1f1f2f',
+                                }}
+                            >
+                                <img
+                                    src={aImg(artist.avatar)}
+                                    alt={artist.name}
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover',
+                                    }}
+                                />
+
+                                <div style={{
+                                    position: 'absolute',
+                                    inset: 0,
+                                    background: 'linear-gradient(to top, rgba(0,0,0,.8), transparent)',
+                                }} />
+
+                                <div style={{
+                                    position: 'absolute',
+                                    bottom: 12,
+                                    left: 12,
+                                }}>
+                                    <div style={{
+                                        fontWeight: 700,
+                                        fontSize: '0.95rem',
+                                    }}>
+                                        {artist.name}
+                                    </div>
+
+                                    <div style={{
+                                        fontSize: 12,
+                                        color: '#bbb',
+                                    }}>
+                                        {artist.country}
+                                    </div>
+                                </div>
+                            </a>
+                        ))}
+                    </div>
+
+                </div>
             </section>
 
             {/* ARTISTAS DESTACADOS */}
@@ -100,8 +213,8 @@ export default function Home({ artists, songs, genres, products }: Props) {
                             color: GENRE_COLORS[i % GENRE_COLORS.length],
                             textDecoration: 'none', fontSize: 14, fontWeight: 500, transition: 'all 0.2s',
                         }}
-                        onMouseEnter={e => (e.currentTarget.style.background = `${GENRE_COLORS[i % GENRE_COLORS.length]}25`)}
-                        onMouseLeave={e => (e.currentTarget.style.background = `${GENRE_COLORS[i % GENRE_COLORS.length]}15`)}
+                            onMouseEnter={e => (e.currentTarget.style.background = `${GENRE_COLORS[i % GENRE_COLORS.length]}25`)}
+                            onMouseLeave={e => (e.currentTarget.style.background = `${GENRE_COLORS[i % GENRE_COLORS.length]}15`)}
                         >{genre.name}</a>
                     ))}
                 </div>
@@ -121,8 +234,8 @@ export default function Home({ artists, songs, genres, products }: Props) {
                             borderBottom: i < 7 ? '1px solid #1a1a2a' : 'none',
                             textDecoration: 'none', color: 'inherit', transition: 'background 0.15s',
                         }}
-                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.03)')}
-                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.03)')}
+                            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                         >
                             <div style={{ width: 36, height: 36, borderRadius: 6, overflow: 'hidden', flexShrink: 0 }}>
                                 <img src={sImg(song.image)} alt={song.title}

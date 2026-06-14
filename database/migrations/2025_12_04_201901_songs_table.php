@@ -16,6 +16,9 @@ return new class extends Migration
             $table->string('title');
             $table->string('duration')->nullable();
             $table->string('release_year')->nullable();
+            $table->string('spotify_url')->nullable();
+            $table->string('apple_music_url')->nullable();
+            $table->string('youtube_url')->nullable();
             $table->foreignId('artist_id')->nullable()->constrained()->onDelete('cascade'); // 👈 añade esto
             $table->timestamps();
         });

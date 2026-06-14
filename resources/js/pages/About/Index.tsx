@@ -1,13 +1,13 @@
 import PublicLayout from '@/layouts/public-layout';
 import { Head } from '@inertiajs/react';
-import { Music2, Shield, Cookie, FileText, Mail, MapPin, ExternalLink } from 'lucide-react';
+import { Music2, Shield, Cookie, FileText, Mail, MapPin, ExternalLink, ShoppingBag, Mic2 } from 'lucide-react';
 
 // Navegación interna
 const sections = [
-    { id: 'about',   label: 'Sobre nosotros', icon: Music2 },
-    { id: 'privacy', label: 'Privacidad',      icon: Shield },
-    { id: 'cookies', label: 'Cookies',         icon: Cookie },
-    { id: 'legal',   label: 'Aviso legal',     icon: FileText },
+    { id: 'about', label: 'Sobre nosotros', icon: Music2 },
+    { id: 'privacy', label: 'Privacidad', icon: Shield },
+    { id: 'cookies', label: 'Cookies', icon: Cookie },
+    { id: 'legal', label: 'Aviso legal', icon: FileText },
 ];
 
 function scrollTo(id: string) {
@@ -57,7 +57,78 @@ export default function About() {
                         Tu enciclopedia musical. Artistas, canciones, géneros, discográficas y tienda oficial en un solo lugar.
                     </p>
                 </div>
+                {/* SOBRE INFOMUSIC */}
+                <section
+                    style={{
+                        marginBottom: '5rem',
+                    }}
+                >
+                    <div
+                        style={{
+                            textAlign: 'center',
+                            maxWidth: 800,
+                            margin: '0 auto 2rem',
+                        }}
+                    >
+                        <h2
+                            style={{
+                                fontFamily: 'Playfair Display, serif',
+                                fontSize: '2rem',
+                                marginBottom: '1rem',
+                            }}
+                        >
+                            ¿Qué es InfoMusic?
+                        </h2>
 
+                        <p
+                            style={{
+                                color: '#888',
+                                lineHeight: 1.8,
+                            }}
+                        >
+                            InfoMusic reúne información sobre artistas,
+                            canciones, géneros musicales y merchandising
+                            oficial en una única plataforma para que los
+                            usuarios puedan descubrir música de una forma
+                            sencilla y visual.
+                        </p>
+                    </div>
+
+                    <div
+                        style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(3,1fr)',
+                            gap: 16,
+                        }}
+                    >
+                        <div className="card" style={{ padding: '1.5rem' }}>
+                            <Mic2 size={28} color="#c8f050" />
+                            <h3 style={{ marginTop: 12 }}>Artistas</h3>
+                            <p style={{ color: '#777', fontSize: 14 }}>
+                                Consulta información detallada sobre artistas
+                                nacionales e internacionales.
+                            </p>
+                        </div>
+
+                        <div className="card" style={{ padding: '1.5rem' }}>
+                            <Music2 size={28} color="#c8f050" />
+                            <h3 style={{ marginTop: 12 }}>Canciones</h3>
+                            <p style={{ color: '#777', fontSize: 14 }}>
+                                Descubre canciones, géneros musicales y
+                                contenido relacionado.
+                            </p>
+                        </div>
+
+                        <div className="card" style={{ padding: '1.5rem' }}>
+                            <ShoppingBag size={28} color="#c8f050" />
+                            <h3 style={{ marginTop: 12 }}>Tienda</h3>
+                            <p style={{ color: '#777', fontSize: 14 }}>
+                                Encuentra productos oficiales y merchandising
+                                de tus artistas favoritos.
+                            </p>
+                        </div>
+                    </div>
+                </section>
                 {/* NAV INTERNA */}
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', marginBottom: '3rem' }}>
                     {sections.map(({ id, label, icon: Icon }) => (
@@ -69,6 +140,7 @@ export default function About() {
                         </button>
                     ))}
                 </div>
+
 
                 {/* ── SOBRE NOSOTROS ── */}
                 <SectionTitle id="about" icon={Music2} title="Sobre nosotros" />

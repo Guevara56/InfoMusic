@@ -11,9 +11,17 @@ class LabelController extends Controller
     public function index()
     {
         $labels = Label::withCount('artists')
-                       ->orderBy('name')
-                       ->get();
-        
+            ->get()
+            ->map(fn($label) => [
+                'id' => $label->id,
+                'name' => $label->name,
+                'country' => $label->country,
+                'description' => $label->description,
+                'website' => $label->website,
+                'logo' => $label->logo,
+                'artists_count' => $label->artists_count,
+            ]);
+
         return Inertia::render('Labels/Index', compact('labels'));
     }
 

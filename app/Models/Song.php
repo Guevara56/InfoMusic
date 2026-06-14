@@ -10,8 +10,10 @@ class Song extends Model
         'title',
         'duration',
         'release_year',
+        'spotify_url',
+        'apple_music_url',
+        'youtube_url',
         'artist_id',
-        'image',
     ];
 
     // Un artista por canción (belongsTo)
@@ -23,6 +25,6 @@ class Song extends Model
     public function genres()
     {
         return $this->belongsToMany(Genre::class, 'genre_song')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 }
