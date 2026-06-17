@@ -51,6 +51,9 @@ class SongController extends Controller
             'genre_ids'    => 'nullable|array',
             'genre_ids.*'  => 'exists:genres,id',
             'image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'spotify_url' => 'nullable|url',
+            'apple_music_url' => 'nullable|url',
+            'youtube_url' => 'nullable|url',
         ]);
 
 
@@ -91,17 +94,19 @@ class SongController extends Controller
             'genre_ids'    => 'nullable|array',
             'genre_ids.*'  => 'exists:genres,id',
             'image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'spotify_url' => 'nullable|url',
+            'apple_music_url' => 'nullable|url',
+            'youtube_url' => 'nullable|url',
         ]);
+
 
         $data = $request->except('genre_ids');
 
         if ($request->hasFile('image')) {
             $this->deleteImage($song->image);
-
-            $data['image'] = $this->uploadImage(
-                $request->file('image'),
-                'songs'
-            );
+            $data['image'] = $this->uploadImage($request->file('image'), 'songs');
+        } else {
+            unset($data['image']); // mantiene la imagen anterior
         }
 
         $song->update($data);

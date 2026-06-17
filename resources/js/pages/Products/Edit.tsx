@@ -7,6 +7,7 @@ import AppLayout from '@/layouts/app-layout';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 import { CircleAlert } from 'lucide-react';
+import ImageInput from '@/components/ImageInput';
 
 interface ArtistType {
     id: number;
@@ -38,19 +39,26 @@ interface Props {
 export default function Edit() {
     const { product, artists, categories } = usePage().props as Props;
 
-    const { data, setData, put, processing, errors } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         name: product.name || '',
         price: product.price || '',
         stock: product.stock ? product.stock.toString() : '',
         description: product.description || '',
-        image: product.image || '',
-        product_category_id: product.product_category_id ? product.product_category_id.toString() : '',
-        artist_id: product.artist_id ? product.artist_id.toString() : '',
+        image: null as File | null,
+        product_category_id: product.product_category_id
+            ? product.product_category_id.toString()
+            : '',
+        artist_id: product.artist_id
+            ? product.artist_id.toString()
+            : '',
+        _method: 'PUT',
     });
 
     const handleUpdate = (e: React.FormEvent) => {
         e.preventDefault();
-        put(route('products.update', product.id));
+        post(route('products.update', product.id), {
+            forceFormData: true,
+        });
     }
 
 
@@ -89,14 +97,21 @@ export default function Edit() {
                     {/* ARTIST */}
                     <div className='space-y-1.5'>
                         <Label htmlFor="artist">Artist</Label>
-                        <select
+                       <select
                             value={data.artist_id}
                             onChange={(e) => setData('artist_id', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                            <option value="">Select an artist</option>
-                            {artists.map(artist => (
-                                <option key={artist.id} value={artist.id}>
+                            className="w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                        ">
+                            <option value="" className="bg-gray-900 text-white">
+                                Select an artist
+                            </option>
+
+                            {artists.map((artist) => (
+                                <option
+                                    key={artist.id}
+                                    value={artist.id}
+                                    className="bg-gray-900 text-white"
+                                >
                                     {artist.name}
                                 </option>
                             ))}
@@ -109,7 +124,7 @@ export default function Edit() {
                         <select
                             value={data.product_category_id}
                             onChange={(e) => setData('product_category_id', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
                             <option value="">Select a category</option>
                             {categories.map((category: CategoryType) => (
@@ -157,6 +172,7 @@ export default function Edit() {
                     {/* IMAGE */}
                     <ImageInput
                         label="Product image"
+                        currentImage={product.image}
                         onChange={(file) => setData('image', file)}
                     />
 

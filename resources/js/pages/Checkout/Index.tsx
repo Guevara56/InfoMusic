@@ -10,6 +10,7 @@ interface CartItem {
     id: number; name: string; price: number;
     quantity: number; subtotal: number;
     category: string | null; artist: string | null;
+    image: string | null;
 }
 
 interface PageProps {
@@ -248,8 +249,11 @@ export default function Index() {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: '1.2rem' }}>
                             {items.map(item => (
                                 <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                    <div style={{ width: 36, height: 36, borderRadius: 6, background: '#1a1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                        <ShoppingBag size={16} color="#2a2a4a" />
+                                    <div style={{ width: 56, height: 56, borderRadius: 8, background: '#1a1a2e', overflow: 'hidden', flexShrink: 0 }}>
+                                        {item.image
+                                            ? <img src={`/storage/${item.image}`} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            : <ShoppingBag size={16} color="#2a2a4a" style={{ margin: 10 }} />
+                                        }
                                     </div>
                                     <div style={{ flex: 1, minWidth: 0 }}>
                                         <div style={{ fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</div>

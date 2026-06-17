@@ -41,6 +41,7 @@ class CheckoutController extends Controller
             'subtotal' => $p->price * $p->pivot->quantity,
             'category' => $p->category?->name,
             'artist'   => $p->artist?->name,
+            'image'    => $p->image,
         ]);
 
         $total = $items->sum('subtotal');

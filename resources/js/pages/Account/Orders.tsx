@@ -29,7 +29,8 @@ const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
 
 function pImg(v: string | null | undefined) {
     if (!v) return null;
-    return v.startsWith('http') ? v : `/storage/${v}`;
+    if (v.startsWith('http') || v.startsWith('/storage')) return v;
+    return `/storage/${v}`;
 }
 
 export default function Orders() {

@@ -32,7 +32,8 @@ interface Props {
 }
 
 export default function Create() {
-    const { artists, genres } = usePage().props as Props;
+    const { artists, genres } =
+        usePage<Props>().props;
 
     const { data, setData, post, processing, errors } = useForm({
         title: '',
@@ -41,6 +42,9 @@ export default function Create() {
         artist_id: '',
         genre_ids: [] as string[],
         image: null as File | null,
+        spotify_url: '',
+        apple_music_url: '',
+        youtube_url: '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -71,7 +75,7 @@ export default function Create() {
                         </Alert>
                     )}
 
-                    {/* TITLE */}
+                    {/* TITULO */}
                     <div className='space-y-1.5'>
                         <Label htmlFor="title">Title</Label>
                         <Input
@@ -82,17 +86,24 @@ export default function Create() {
                         />
                     </div>
 
-                    {/* ARTIST (SELECT UNO SOLO) */}
+                    {/* ARTIST*/}
                     <div className='space-y-1.5'>
                         <Label htmlFor="artist">Artist</Label>
                         <select
                             value={data.artist_id}
                             onChange={(e) => setData('artist_id', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                            <option value="">Select an artist</option>
-                            {artists.map(artist => (
-                                <option key={artist.id} value={artist.id}>
+                            className="w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                        ">
+                            <option value="" className="bg-gray-900 text-white">
+                                Select an artist
+                            </option>
+
+                            {artists.map((artist) => (
+                                <option
+                                    key={artist.id}
+                                    value={artist.id}
+                                    className="bg-gray-900 text-white"
+                                >
                                     {artist.name}
                                 </option>
                             ))}
@@ -102,7 +113,7 @@ export default function Create() {
                         )}
                     </div>
 
-                    {/* GENRES (SELECT MÚLTIPLE) */}
+                    {/* GENEROS */}
                     <div className='space-y-1.5'>
                         <Label htmlFor="genres">Genres</Label>
                         {genres && genres.length > 0 ? (
@@ -113,7 +124,7 @@ export default function Create() {
                                     const selected = Array.from(e.target.selectedOptions, opt => opt.value);
                                     setData('genre_ids', selected);
                                 }}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 size={5}
                             >
                                 {genres.map((genre: GenreType) => (
@@ -128,7 +139,7 @@ export default function Create() {
                         <p className="text-xs text-gray-500">Hold Ctrl/Cmd to select multiple</p>
                     </div>
 
-                    {/* DURATION */}
+                    {/* DURACION */}
                     <div className='space-y-1.5'>
                         <Label htmlFor="duration">Duration</Label>
                         <Input
@@ -149,10 +160,47 @@ export default function Create() {
                         />
                     </div>
 
+
                     <ImageInput
                         label="Song cover"
                         onChange={(file) => setData('image', file)}
                     />
+
+                    <div className="space-y-1.5">
+                        <Label>Spotify URL</Label>
+
+                        <Input
+                            value={data.spotify_url}
+                            onChange={(e) =>
+                                setData('spotify_url', e.target.value)
+                            }
+                            placeholder="https://open.spotify.com/..."
+                        />
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <Label>Apple Music URL</Label>
+
+                        <Input
+                            value={data.apple_music_url}
+                            onChange={(e) =>
+                                setData('apple_music_url', e.target.value)
+                            }
+                            placeholder="https://music.apple.com/..."
+                        />
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <Label>YouTube URL</Label>
+
+                        <Input
+                            value={data.youtube_url}
+                            onChange={(e) =>
+                                setData('youtube_url', e.target.value)
+                            }
+                            placeholder="https://youtube.com/..."
+                        />
+                    </div>
 
                     {/* SUBMIT */}
                     <Button

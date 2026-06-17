@@ -29,7 +29,13 @@ interface PageProps {
 
 function pImg(v: string | null | undefined) {
     if (!v) return null;
-    return v.startsWith('http') ? v : `/storage/${v}`;
+    if (v.startsWith('http://localhost/storage/') || v.startsWith('http://localhost:8000/storage/')) {
+        const path = v.replace(/^http:\/\/localhost(:\d+)?\/storage\//, '');
+        return `/storage/${path}`;
+    }
+    if (v.startsWith('http')) return v;
+    if (v.startsWith('storage/')) return `/${v}`;
+    return `/storage/${v}`;
 }
 
 export default function Confirmation() {
@@ -50,6 +56,7 @@ export default function Confirmation() {
     return (
         <PublicLayout>
             <Head title="¡Pedido confirmado! — InfoMusic" />
+
 
             <div style={{ maxWidth: 640, margin: '0 auto', textAlign: 'center', paddingTop: '2rem' }}>
 
@@ -155,7 +162,9 @@ export default function Confirmation() {
                         Seguir comprando
                     </a>
                 </div>
+
             </div>
+
         </PublicLayout>
     );
 }

@@ -30,13 +30,13 @@ export default function Edit() {
         label_id: string;
         _method: string;
     }>({
-        name:         artist.name         || '',
-        bio:          artist.bio          || '',
-        country:      artist.country      || '',
-        formed_year:  artist.formed_year  || '',
-        avatar:       null,               // null = no cambiar la imagen actual
-        label_id:     artist.label_id ? artist.label_id.toString() : '',
-        _method:      'PUT',              // method spoofing para PUT con FormData
+        name: artist.name || '',
+        bio: artist.bio || '',
+        country: artist.country || '',
+        formed_year: artist.formed_year || '',
+        avatar: null,               // null = no cambiar la imagen actual
+        label_id: artist.label_id ? artist.label_id.toString() : '',
+        _method: 'PUT',              // method spoofing para PUT con FormData
     });
 
     const handleUpdate = (e: React.FormEvent) => {
@@ -48,7 +48,10 @@ export default function Edit() {
     };
 
     const countryOptions = countries
-        .map(c => ({ value: c.name.common, label: `${c.flag} ${c.name.common}` }))
+        .map(c => ({
+            value: c.translations?.spa?.common || c.name.common,
+            label: `${c.flag} ${c.translations?.spa?.common || c.name.common}`
+        }))
         .sort((a, b) => a.label.localeCompare(b.label));
 
     return (
@@ -87,10 +90,42 @@ export default function Edit() {
                             onChange={o => setData('country', o?.value || '')}
                             options={countryOptions}
                             placeholder="Select a country"
-                            isSearchable isClearable
+                            isSearchable
+                            isClearable
                             styles={{
-                                control: base => ({ ...base, borderColor: '#d1d5db', borderRadius: '0.375rem', padding: '0.125rem', minHeight: '42px' }),
-                                menu: base => ({ ...base, zIndex: 50 }),
+                                control: (base) => ({
+                                    ...base,
+                                    borderColor: '#d1d5db',
+                                    borderRadius: '0.375rem',
+                                    padding: '0.125rem',
+                                    minHeight: '42px',
+                                    backgroundColor: '#111827',
+                                }),
+                                menu: (base) => ({
+                                    ...base,
+                                    zIndex: 50,
+                                    backgroundColor: '#1f2937',
+                                }),
+                                option: (base, state) => ({
+                                    ...base,
+                                    backgroundColor: state.isFocused
+                                        ? '#374151'
+                                        : '#1f2937',
+                                    color: '#ffffff',
+                                    cursor: 'pointer',
+                                }),
+                                singleValue: (base) => ({
+                                    ...base,
+                                    color: '#ffffff',
+                                }),
+                                input: (base) => ({
+                                    ...base,
+                                    color: '#ffffff',
+                                }),
+                                placeholder: (base) => ({
+                                    ...base,
+                                    color: '#9ca3af',
+                                }),
                             }}
                         />
                     </div>
@@ -110,8 +145,8 @@ export default function Edit() {
                     <div className="space-y-1.5">
                         <Label>Label (Optional)</Label>
                         <select value={data.label_id} onChange={e => setData('label_id', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900">
-                            <option value="">Independent</option>
+                            className="w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                        "><option value="">Independent</option>
                             {labels.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
                         </select>
                     </div>

@@ -43,3 +43,5 @@ class Artist extends Model
         return $this->belongsToMany(Genre::class);
     }
 }
+
+

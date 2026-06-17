@@ -93,11 +93,11 @@ export default function Create() {
 
                     {/* PREVIEW */}
                     {data.name && (
-                        <div className="p-3 bg-gray-100 rounded-md">
-                            <p className="text-sm text-gray-600">
+                        <div className="w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <p className="text-sm text-blue-600">
                                 <strong>Preview:</strong> {data.icon} {data.name}
                             </p>
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs text-e-500 mt-1">
                                 <strong>Slug:</strong> {data.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}
                             </p>
                         </div>

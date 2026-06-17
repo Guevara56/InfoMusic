@@ -4,64 +4,60 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\ProductCategory;
-use Illuminate\Support\Str;
 
 class ProductCategorySeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $categories = [
             [
-                'name' => 'Vinyl',
+                'name' => 'Vinilo',
                 'slug' => 'vinyl',
                 'icon' => '💿',
-                'description' => 'Vinyl records and LPs',
+                'description' => 'Discos de vinilo y LPs',
             ],
             [
                 'name' => 'CD',
                 'slug' => 'cd',
                 'icon' => '💽',
-                'description' => 'Compact discs',
+                'description' => 'Discos compactos',
             ],
             [
-                'name' => 'T-Shirt',
+                'name' => 'Camiseta',
                 'slug' => 't-shirt',
                 'icon' => '👕',
-                'description' => 'Band and artist t-shirts',
+                'description' => 'Camisetas de grupos y artistas',
             ],
             [
-                'name' => 'Hoodie',
+                'name' => 'Sudadera',
                 'slug' => 'hoodie',
                 'icon' => '🧥',
-                'description' => 'Hooded sweatshirts',
+                'description' => 'Sudaderas con capucha',
             ],
             [
-                'name' => 'Poster',
+                'name' => 'Póster',
                 'slug' => 'poster',
                 'icon' => '🖼️',
-                'description' => 'Wall posters and prints',
+                'description' => 'Pósters y láminas decorativas',
             ],
             [
-                'name' => 'Hat',
+                'name' => 'Gorra',
                 'slug' => 'hat',
                 'icon' => '🧢',
-                'description' => 'Caps and beanies',
+                'description' => 'Gorras y gorros',
             ],
             [
-                'name' => 'Accessory',
+                'name' => 'Accesorio',
                 'slug' => 'accessory',
                 'icon' => '💍',
-                'description' => 'Miscellaneous accessories',
+                'description' => 'Accesorios varios',
             ],
             [
-                'name' => 'Ticket',
+                'name' => 'Entrada',
                 'slug' => 'ticket',
                 'icon' => '🎟️',
-                'description' => 'Event tickets',
-            ]
+                'description' => 'Entradas para eventos',
+            ],
         ];
 
         foreach ($categories as $category) {

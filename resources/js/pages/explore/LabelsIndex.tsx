@@ -20,17 +20,17 @@ export default function LabelsIndex({ labels }: { labels: Label[] }) {
                             {label.logo && (
                                 <div
                                     style={{
-                                        width: 70,
-                                        height: 70,
+                                        width: 96,
+                                        height: 96,
                                         marginBottom: 14,
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        borderRadius: '50%',
+                                        borderRadius: '25%',
                                         overflow: 'hidden',
                                         background: '#1e1e3a',
                                         flexShrink: 0,
-                                        marginRight: 14,
+                                        marginRight: 20,
                                     }}
                                 >
                                     <img

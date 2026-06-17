@@ -56,7 +56,7 @@ export default function Edit() {
                     )}
 
                     {/* MOSTRAR SLUG ACTUAL */}
-                    <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                    <div className="w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         <p className="text-sm">
                             <strong>Current slug:</strong> 
                             <span className="ml-2 text-blue-600 font-mono">{category.slug}</span>
@@ -101,7 +101,7 @@ export default function Edit() {
 
                     {/* PREVIEW DEL NUEVO SLUG */}
                     {data.name !== category.name && (
-                        <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                        <div className="w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             <p className="text-sm">
                                 <strong>New slug will be:</strong> 
                                 <span className="ml-2 text-yellow-700 font-mono">

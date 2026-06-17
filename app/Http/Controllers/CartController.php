@@ -30,9 +30,10 @@ class CartController extends Controller
             'price'    => $p->price,
             'quantity' => $p->pivot->quantity,
             'subtotal' => $p->price * $p->pivot->quantity,
-            'image'    => $p->image,     // ← añadir esto
+            'image'    => $p->image,    
             'category' => $p->category?->name,
             'artist'   => $p->artist ? ['id' => $p->artist->id, 'name' => $p->artist->name] : null,
+
         ]);
 
         $total = $items->sum('subtotal');
@@ -97,6 +98,7 @@ class CartController extends Controller
                 'price'    => $p->price,
                 'category' => $p->category?->name,
                 'artist'   => $p->artist?->name,
+                'image'    => $p->image
             ]);
 
         return Inertia::render('Cart/Index', [

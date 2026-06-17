@@ -10,6 +10,7 @@ class Song extends Model
         'title',
         'duration',
         'release_year',
+        'image',
         'spotify_url',
         'apple_music_url',
         'youtube_url',

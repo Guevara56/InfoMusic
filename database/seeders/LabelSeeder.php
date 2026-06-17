@@ -10,14 +10,14 @@ class LabelSeeder extends Seeder
     public function run(): void
     {
         $labels = [
-            ['name' => 'Universal Music Group',  'country' => 'USA', 'description' => 'The largest music company in the world.',          'logo' => null, 'website' => 'https://www.universalmusic.com'],
-            ['name' => 'Sony Music Entertainment','country' => 'USA', 'description' => 'One of the Big Three record labels.',              'logo' => null, 'website' => 'https://www.sonymusic.com'],
-            ['name' => 'Warner Music Group',      'country' => 'USA', 'description' => 'Home to legendary artists worldwide.',             'logo' => null, 'website' => 'https://www.wmg.com'],
-            ['name' => 'Atlantic Records',        'country' => 'USA', 'description' => 'Iconic label founded in 1947.',                    'logo' => null, 'website' => 'https://www.atlanticrecords.com'],
-            ['name' => 'Interscope Records',      'country' => 'USA', 'description' => 'Known for hip-hop and alternative artists.',       'logo' => null, 'website' => 'https://www.interscope.com'],
-            ['name' => 'Columbia Records',        'country' => 'USA', 'description' => 'One of the oldest record labels in existence.',    'logo' => null, 'website' => 'https://www.columbiarecords.com'],
-            ['name' => 'Republic Records',        'country' => 'USA', 'description' => 'Home to Taylor Swift and many pop giants.',        'logo' => null, 'website' => 'https://www.republicrecords.com'],
-            ['name' => 'XL Recordings',           'country' => 'UK',  'description' => 'Independent label behind Adele and Radiohead.',    'logo' => null, 'website' => 'https://www.xlrecordings.com'],
+            ['name' => 'Universal Music Group',  'country' => 'Estados Unidos', 'description' => 'La mayor empresa musical del mundo.',                        'logo' => null, 'website' => 'https://www.universalmusic.com'],
+            ['name' => 'Sony Music Entertainment', 'country' => 'Estados Unidos', 'description' => 'Una de las tres grandes discográficas del sector.',          'logo' => null, 'website' => 'https://www.sonymusic.com'],
+            ['name' => 'Warner Music Group',      'country' => 'Estados Unidos', 'description' => 'Hogar de artistas legendarios de todo el mundo.',            'logo' => null, 'website' => 'https://www.wmg.com'],
+            ['name' => 'Atlantic Records',        'country' => 'Estados Unidos', 'description' => 'Sello icónico fundado en 1947.',                             'logo' => null, 'website' => 'https://www.atlanticrecords.com'],
+            ['name' => 'Interscope Records',      'country' => 'Estados Unidos', 'description' => 'Conocida por sus artistas de hip-hop y música alternativa.', 'logo' => null, 'website' => 'https://www.interscope.com'],
+            ['name' => 'Columbia Records',        'country' => 'Estados Unidos', 'description' => 'Uno de los sellos discográficos más antiguos del mundo.',    'logo' => null, 'website' => 'https://www.columbiarecords.com'],
+            ['name' => 'Republic Records',        'country' => 'Estados Unidos', 'description' => 'Sello de Taylor Swift y grandes estrellas del pop.',         'logo' => null, 'website' => 'https://www.republicrecords.com'],
+            ['name' => 'XL Recordings',           'country' => 'Reino Unido',   'description' => 'Sello independiente conocido por Adele y Radiohead.',        'logo' => null, 'website' => 'https://www.xlrecordings.com'],
         ];
 
         foreach ($labels as $label) {

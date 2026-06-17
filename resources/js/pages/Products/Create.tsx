@@ -87,11 +87,18 @@ export default function Create() {
                         <select
                             value={data.artist_id}
                             onChange={(e) => setData('artist_id', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                            <option value="">Select an artist</option>
-                            {artists.map(artist => (
-                                <option key={artist.id} value={artist.id}>
+                            className="w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                        ">
+                            <option value="" className="bg-gray-900 text-white">
+                                Select an artist
+                            </option>
+
+                            {artists.map((artist) => (
+                                <option
+                                    key={artist.id}
+                                    value={artist.id}
+                                    className="bg-gray-900 text-white"
+                                >
                                     {artist.name}
                                 </option>
                             ))}
@@ -106,7 +113,7 @@ export default function Create() {
                         <select
                             value={data.product_category_id}
                             onChange={(e) => setData('product_category_id', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
                             <option value="">Select a category</option>
                             {categories.map(category => (
@@ -156,7 +163,7 @@ export default function Create() {
                         onChange={(file) => setData('image', file)}
                     />
 
-                    
+
 
                     <Button
                         disabled={processing}

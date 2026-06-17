@@ -17,7 +17,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 interface LabelType { id: number; name: string; }
-interface GenreType  { id: number; name: string; }
+interface GenreType { id: number; name: string; }
 interface Props { labels: LabelType[]; genres: GenreType[]; }
 
 export default function Create() {
@@ -49,7 +49,10 @@ export default function Create() {
     };
 
     const countryOptions = countries
-        .map(c => ({ value: c.name.common, label: `${c.flag} ${c.name.common}` }))
+        .map(c => ({
+            value: c.translations?.spa?.common || c.name.common,
+            label: `${c.flag} ${c.translations?.spa?.common || c.name.common}`
+        }))
         .sort((a, b) => a.label.localeCompare(b.label));
 
     return (
@@ -72,7 +75,7 @@ export default function Create() {
                     )}
 
                     <div className="space-y-1.5">
-                        <Label>Name</Label>
+                        <Label>Nombre</Label>
                         <Input placeholder="Artist Name" value={data.name} onChange={e => setData('name', e.target.value)} />
                     </div>
 
@@ -82,32 +85,65 @@ export default function Create() {
                     </div>
 
                     <div className="space-y-1.5">
-                        <Label>Country</Label>
+                        <Label>País</Label>
                         <Select
                             value={countryOptions.find(o => o.value === data.country) || null}
                             onChange={o => setData('country', o?.value || '')}
                             options={countryOptions}
                             placeholder="Select a country"
-                            isSearchable isClearable
+                            isSearchable
+                            isClearable
                             styles={{
-                                control: base => ({ ...base, borderColor: '#d1d5db', borderRadius: '0.375rem', padding: '0.125rem', minHeight: '42px' }),
-                                menu: base => ({ ...base, zIndex: 50 }),
+                                control: (base) => ({
+                                    ...base,
+                                    borderColor: '#d1d5db',
+                                    borderRadius: '0.375rem',
+                                    padding: '0.125rem',
+                                    minHeight: '42px',
+                                    backgroundColor: '#111827',
+                                }),
+                                menu: (base) => ({
+                                    ...base,
+                                    zIndex: 50,
+                                    backgroundColor: '#1f2937',
+                                }),
+                                option: (base, state) => ({
+                                    ...base,
+                                    backgroundColor: state.isFocused
+                                        ? '#374151'
+                                        : '#1f2937',
+                                    color: '#ffffff',
+                                    cursor: 'pointer',
+                                }),
+                                singleValue: (base) => ({
+                                    ...base,
+                                    color: '#ffffff',
+                                }),
+                                input: (base) => ({
+                                    ...base,
+                                    color: '#ffffff',
+                                }),
+                                placeholder: (base) => ({
+                                    ...base,
+                                    color: '#9ca3af',
+                                }),
                             }}
                         />
                     </div>
 
                     <div className="space-y-1.5">
-                        <Label>Genres</Label>
+                        <Label>Generos</Label>
                         <select multiple value={data.genre_ids}
                             onChange={e => setData('genre_ids', Array.from(e.target.selectedOptions, o => o.value))}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900" size={5}>
+                            className="w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                        ">
                             {genres.map((g: GenreType) => <option key={g.id} value={g.id}>{g.name}</option>)}
                         </select>
                         <p className="text-xs text-gray-500">Hold Ctrl/Cmd to select multiple</p>
                     </div>
 
                     <div className="space-y-1.5">
-                        <Label>Formed Year</Label>
+                        <Label>Año Debut</Label>
                         <Input placeholder="1990" value={data.formed_year} onChange={e => setData('formed_year', e.target.value)} />
                     </div>
 
@@ -118,9 +154,10 @@ export default function Create() {
                     />
 
                     <div className="space-y-1.5">
-                        <Label>Label (Optional)</Label>
+                        <Label>Discográfica</Label>
                         <select value={data.label_id} onChange={e => setData('label_id', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900">
+                            className="w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                        ">
                             <option value="">Independent</option>
                             {labels.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
                         </select>

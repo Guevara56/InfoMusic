@@ -99,18 +99,18 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
             accent: '#c8f050',
         }
         : {
-            background: '#f7f8fc',
+            background: '#f4f4f8',
             backgroundSecondary: '#ffffff',
-            backgroundTertiary: '#eef1f7',
-            text: '#111827',
-            textSecondary: '#4b5563',
-            textMuted: '#6b7280',
-            border: '#dbe2ea',
-            borderStrong: '#cfd8e3',
+            backgroundTertiary: '#ebebf0',
+            text: '#111118',
+            textSecondary: '#44444f',
+            textMuted: '#888899',
+            border: '#e0e0ea',
+            borderStrong: '#c8c8d8',
             card: '#ffffff',
-            navbar: 'rgba(255,255,255,0.95)',
-            footer: '#f1f5f9',
-            accent: '#c8f050',
+            navbar: 'rgba(244,244,248,0.95)',
+            footer: '#ebebf0',
+            accent: '#8ab800',
         };
 
     const navLinks = [

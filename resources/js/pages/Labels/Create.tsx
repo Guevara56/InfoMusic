@@ -33,16 +33,16 @@ export default function Create() {
     }
 
     const countryOptions = countries
-        .map(country => ({
-            value: country.name.common,
-            label: `${country.flag} ${country.name.common}`,
+        .map(c => ({
+            value: c.translations?.spa?.common || c.name.common,
+            label: `${c.flag} ${c.translations?.spa?.common || c.name.common}`
         }))
         .sort((a, b) => a.label.localeCompare(b.label));
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create a New Label" />
-            
+
             <div className="w-8/12 p-4">
                 <div className="space-y-4">
                     {Object.keys(errors).length > 0 && (
@@ -61,9 +61,9 @@ export default function Create() {
 
                     <div className='space-y-1.5'>
                         <Label htmlFor="name">Name</Label>
-                        <Input 
-                            placeholder="Record Label Name" 
-                            value={data.name} 
+                        <Input
+                            placeholder="Record Label Name"
+                            value={data.name}
                             onChange={(e) => setData('name', e.target.value)}
                             autoFocus
                         />
@@ -72,8 +72,8 @@ export default function Create() {
                     <div className='space-y-1.5'>
                         <Label htmlFor="country">Country</Label>
                         <Select
-                            value={countryOptions.find(opt => opt.value === data.country) || null}
-                            onChange={(option) => setData('country', option?.value || '')}
+                            value={countryOptions.find(o => o.value === data.country) || null}
+                            onChange={o => setData('country', o?.value || '')}
                             options={countryOptions}
                             placeholder="Select a country"
                             isSearchable
@@ -85,10 +85,32 @@ export default function Create() {
                                     borderRadius: '0.375rem',
                                     padding: '0.125rem',
                                     minHeight: '42px',
+                                    backgroundColor: '#111827',
                                 }),
                                 menu: (base) => ({
                                     ...base,
                                     zIndex: 50,
+                                    backgroundColor: '#1f2937',
+                                }),
+                                option: (base, state) => ({
+                                    ...base,
+                                    backgroundColor: state.isFocused
+                                        ? '#374151'
+                                        : '#1f2937',
+                                    color: '#ffffff',
+                                    cursor: 'pointer',
+                                }),
+                                singleValue: (base) => ({
+                                    ...base,
+                                    color: '#ffffff',
+                                }),
+                                input: (base) => ({
+                                    ...base,
+                                    color: '#ffffff',
+                                }),
+                                placeholder: (base) => ({
+                                    ...base,
+                                    color: '#9ca3af',
                                 }),
                             }}
                         />
@@ -96,37 +118,37 @@ export default function Create() {
 
                     <div className='space-y-1.5'>
                         <Label htmlFor="description">Description</Label>
-                        <Textarea 
-                            placeholder="About this record label..." 
-                            value={data.description} 
+                        <Textarea
+                            placeholder="About this record label..."
+                            value={data.description}
                             onChange={(e) => setData('description', e.target.value)}
                             rows={5}
                         />
                     </div>
-                            
+
                     <div className='space-y-1.5'>
                         <Label htmlFor="logo">Logo URL (Optional)</Label>
-                        <Input 
+                        <Input
                             type="url"
-                            placeholder="https://..." 
-                            value={data.logo} 
+                            placeholder="https://..."
+                            value={data.logo}
                             onChange={(e) => setData('logo', e.target.value)}
                         />
                     </div>
 
                     <div className='space-y-1.5'>
                         <Label htmlFor="website">Website (Optional)</Label>
-                        <Input 
+                        <Input
                             type="url"
-                            placeholder="https://..." 
-                            value={data.website} 
+                            placeholder="https://..."
+                            value={data.website}
                             onChange={(e) => setData('website', e.target.value)}
                         />
                     </div>
 
-                    <Button 
-                        disabled={processing} 
-                        onClick={handleSubmit} 
+                    <Button
+                        disabled={processing}
+                        onClick={handleSubmit}
                         className="mt-4"
                     >
                         {processing ? 'Creating...' : 'Add Label'}

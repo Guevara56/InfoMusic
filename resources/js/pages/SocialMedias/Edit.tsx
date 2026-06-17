@@ -48,14 +48,12 @@ export default function Edit() {
         'YouTube',
         'Spotify',
         'SoundCloud',
-        'Bandcamp',
-        'Other'
     ];
 
     return (
-        <AppLayout breadcrumbs={[{title: 'Edit Social Media', href: `/social-medias/${socialMedia.id}/edit`}]}>
+        <AppLayout breadcrumbs={[{ title: 'Edit Social Media', href: `/social-medias/${socialMedia.id}/edit` }]}>
             <Head title="Update Social Media" />
-            
+
             <div className="w-8/12 p-4">
                 <div className="space-y-4">
                     {/* ERRORES */}
@@ -76,14 +74,21 @@ export default function Edit() {
                     {/* ARTIST */}
                     <div className='space-y-1.5'>
                         <Label htmlFor="artist">Artist</Label>
-                        <select 
+                        <select
                             value={data.artist_id}
                             onChange={(e) => setData('artist_id', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                            <option value="">Select an artist</option>
-                            {artists.map(artist => (
-                                <option key={artist.id} value={artist.id}>
+                            className=" w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                        ">
+                            <option value="" className="bg-gray-900 text-white">
+                                Select an artist
+                            </option>
+
+                            {artists.map((artist) => (
+                                <option
+                                    key={artist.id}
+                                    value={artist.id}
+                                    className="bg-gray-900 text-white"
+                                >
                                     {artist.name}
                                 </option>
                             ))}
@@ -93,11 +98,11 @@ export default function Edit() {
                     {/* PLATFORM */}
                     <div className='space-y-1.5'>
                         <Label htmlFor="platform">Platform</Label>
-                        <select 
+                        <select
                             value={data.platform}
                             onChange={(e) => setData('platform', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        >
+                            className=" w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                            ">
                             <option value="">Select platform</option>
                             {platforms.map(platform => (
                                 <option key={platform} value={platform}>
@@ -110,10 +115,10 @@ export default function Edit() {
                     {/* URL */}
                     <div className='space-y-1.5'>
                         <Label htmlFor="url">URL</Label>
-                        <Input 
+                        <Input
                             type="url"
-                            placeholder="https://instagram.com/artist" 
-                            value={data.url} 
+                            placeholder="https://instagram.com/artist"
+                            value={data.url}
                             onChange={(e) => setData('url', e.target.value)}
                         />
                     </div>
@@ -121,23 +126,23 @@ export default function Edit() {
                     {/* FOLLOWERS */}
                     <div className='space-y-1.5'>
                         <Label htmlFor="followers">Followers (Optional)</Label>
-                        <Input 
-                            placeholder="1.5M" 
-                            value={data.followers} 
+                        <Input
+                            placeholder="1.5M"
+                            value={data.followers}
                             onChange={(e) => setData('followers', e.target.value)}
                         />
                     </div>
 
                     {/* SUBMIT */}
-                    <Button 
-                        disabled={processing} 
-                        onClick={handleUpdate} 
+                    <Button
+                        disabled={processing}
+                        onClick={handleUpdate}
                         className="mt-4"
                     >
                         {processing ? 'Updating...' : 'Update Social Media'}
                     </Button>
                 </div>
-            </div>
-        </AppLayout>
+            </div >
+        </AppLayout >
     );
 }
